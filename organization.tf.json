@@ -2,9 +2,9 @@
   "resource": {
     "oci_identity_compartment": {
       "platform": {
-        "name": "${local.project}",
+        "compartment_id": "${var.tenancy_ocid}",
         "description": "${local.project}",
-        "compartment_id": "${var.tenancy_ocid}"
+        "name": "${local.project}"
       }
     }
   }
