@@ -1,0 +1,11 @@
+{
+  "resource": {
+    "oci_identity_compartment": {
+      "platform": {
+        "name": "${local.project}",
+        "description": "${local.project}",
+        "compartment_id": "${var.tenancy_ocid}"
+      }
+    }
+  }
+}

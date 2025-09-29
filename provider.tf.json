@@ -1,4 +1,6 @@
 {
   "provider": { "oci": {} },
-  "terraform": { "required_providers": { "oci": { "version": "~> 7.19.0" } } }
+  "terraform": { "required_providers": { "oci": { "version": "~> 7.19.0" } } },
+  "locals": { "project": "platform" },
+  "variable": { "tenancy_ocid": { "type": "string" } }
 }
