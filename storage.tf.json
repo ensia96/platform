@@ -1,0 +1,11 @@
+{
+  "resource": {
+    "oci_objectstorage_bucket": {
+      "state": {
+        "compartment_id": "${var.tenancy_ocid}",
+        "name": "${local.project}-state",
+        "namespace": "${data.oci_objectstorage_namespace.state.namespace}"
+      }
+    }
+  }
+}
