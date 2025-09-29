@@ -1,0 +1,4 @@
+{
+  "provider": { "oci": {} },
+  "terraform": { "required_providers": { "oci": { "version": "~> 7.19.0" } } }
+}
