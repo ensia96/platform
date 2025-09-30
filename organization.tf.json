@@ -6,6 +6,37 @@
         "description": "${local.project}",
         "name": "${local.project}"
       }
+    },
+    "oci_identity_group": {
+      "managers": {
+        "compartment_id": "${var.tenancy_ocid}",
+        "description": "manage ${local.project}",
+        "name": "${local.project}-identity-group-managers"
+      }
+    },
+    "oci_identity_policy": {
+      "manager": {
+        "compartment_id": "${var.tenancy_ocid}",
+        "description": "manage ${local.project}",
+        "name": "${local.project}-identity-policy-manager",
+        "statements": [
+          "Allow group ${oci_identity_group.managers.name} to manage all-resources in tenancy"
+        ]
+      }
+    },
+    "oci_identity_user": {
+      "manager": {
+        "compartment_id": "${var.tenancy_ocid}",
+        "description": "manage ${local.project}",
+        "email": "${local.project}@terraform.com",
+        "name": "${local.project}-identity-user-manager"
+      }
+    },
+    "oci_identity_user_group_membership": {
+      "manager": {
+        "group_id": "${oci_identity_group.managers.id}",
+        "user_id": "${oci_identity_user.manager.id}"
+      }
     }
   }
 }
