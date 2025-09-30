@@ -1,3 +1,9 @@
 *
 !.gitignore
 !*.tf.json
+!.github
+!.github/actions
+!.github/actions/setup
+!.github/actions/setup/action.yml
+!.github/workflows
+!.github/workflows/provision.yml

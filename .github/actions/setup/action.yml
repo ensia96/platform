@@ -1,0 +1,23 @@
+name: Setup Terraform and Authenticate
+
+inputs:
+  private_key:
+    required: true
+  private_key_path:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Create OCI Private Key File
+      shell: bash
+      run: |
+        echo "${{ inputs.private_key }}" > ${{ inputs.private_key_path }}
+        chmod 600 ${{ inputs.private_key_path }}
+
+    - name: Terraform Init
+      shell: bash
+      run: terraform init
