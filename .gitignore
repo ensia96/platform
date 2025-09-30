@@ -1,3 +1,6 @@
 *
 !.gitignore
 !*.tf.json
+!.github
+!.github/workflows
+!.github/workflows/provision.yml
