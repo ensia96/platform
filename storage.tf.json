@@ -4,7 +4,7 @@
       "state": {
         "compartment_id": "${var.tenancy_ocid}",
         "name": "${local.project}-state",
-        "namespace": "${data.oci_objectstorage_namespace.state.namespace}"
+        "namespace": "cnm7patunz1z"
       }
     }
   }

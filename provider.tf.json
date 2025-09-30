@@ -1,5 +1,4 @@
 {
-  "data": { "oci_objectstorage_namespace": { "state": {} } },
   "locals": { "project": "platform" },
   "provider": { "oci": {} },
   "terraform": {
