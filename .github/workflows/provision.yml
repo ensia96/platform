@@ -2,11 +2,11 @@ name: Terraform CI/CD
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  TF_VAR_fingerprint: ${{ secrets.FINGERPRINT }}
+  TF_VAR_private_key_path: "~/oci_api_key.pem"
+  TF_VAR_region: ${{ secrets.REGION }}
   TF_VAR_tenancy_ocid: ${{ secrets.TENANCY_OCID }}
   TF_VAR_user_ocid: ${{ secrets.USER_OCID }}
-  TF_VAR_fingerprint: ${{ secrets.FINGERPRINT }}
-  TF_VAR_private_key: ${{ secrets.PRIVATE_KEY }}
-  TF_VAR_region: ${{ secrets.REGION }}
 
 on:
   push:
@@ -33,6 +33,9 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
+
+      - name: Create OCI Private Key File
+        run: echo "${{ secrets.PRIVATE_KEY }}" > ${{ env.TF_VAR_private_key_path }} && chmod 600 ${{ env.TF_VAR_private_key_path }}
 
       - name: Terraform Init
         id: init
@@ -83,6 +86,9 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
+
+      - name: Create OCI Private Key File
+        run: echo "${{ secrets.PRIVATE_KEY }}" > ${{ env.TF_VAR_private_key_path }} && chmod 600 ${{ env.TF_VAR_private_key_path }}
 
       - name: Terraform Init
         run: terraform init

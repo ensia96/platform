@@ -12,11 +12,5 @@
     },
     "required_providers": { "oci": { "version": "~> 7.19.0" } }
   },
-  "variable": {
-    "fingerprint": { "type": "string" },
-    "private_key": { "type": "string" },
-    "region": { "type": "string" },
-    "tenancy_ocid": { "type": "string" },
-    "user_ocid": { "type": "string" }
-  }
+  "variable": { "tenancy_ocid": { "type": "string" } }
 }
