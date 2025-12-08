@@ -66,6 +66,15 @@
         "prohibit_public_ip_on_vnic": true,
         "route_table_id": "${oci_core_route_table.private.id}",
         "vcn_id": "${oci_core_vcn.main.id}"
+      },
+      "public": {
+        "cidr_block": "10.0.1.0/24",
+        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "display_name": "${local.project}-public-subnet",
+        "dns_label": "publicmain",
+        "prohibit_public_ip_on_vnic": false,
+        "route_table_id": "${oci_core_route_table.public.id}",
+        "vcn_id": "${oci_core_vcn.main.id}"
       }
     },
     "oci_core_vcn": {
