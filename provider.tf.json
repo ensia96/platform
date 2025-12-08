@@ -1,5 +1,4 @@
 {
-  "locals": { "project": "platform" },
   "provider": { "oci": {} },
   "terraform": {
     "backend": {
@@ -9,7 +8,8 @@
         "namespace": "cnm7patunz1z"
       }
     },
-    "required_providers": { "oci": { "version": "~> 7.19.0" } }
-  },
-  "variable": { "tenancy_ocid": { "type": "string" } }
+    "required_providers": {
+      "oci": { "source": "oracle/oci", "version": "~> 7.19.0" }
+    }
+  }
 }
