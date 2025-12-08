@@ -1,5 +1,12 @@
 {
   "resource": {
+    "oci_core_internet_gateway": {
+      "main": {
+        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "display_name": "${local.project}-internet-gateway",
+        "vcn_id": "${oci_core_vcn.main.id}"
+      }
+    },
     "oci_core_vcn": {
       "main": {
         "cidr_block": "10.0.0.0/16",
