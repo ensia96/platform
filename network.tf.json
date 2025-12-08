@@ -31,6 +31,18 @@
           }
         ],
         "vcn_id": "${oci_core_vcn.main.id}"
+      },
+      "public": {
+        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "display_name": "${local.project}-public-route-table",
+        "route_rules": [
+          {
+            "destination": "0.0.0.0/0",
+            "destination_type": "CIDR_BLOCK",
+            "network_entity_id": "${oci_core_internet_gateway.main.id}"
+          }
+        ],
+        "vcn_id": "${oci_core_vcn.main.id}"
       }
     },
     "oci_core_service_gateway": {
