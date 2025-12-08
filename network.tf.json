@@ -91,6 +91,19 @@
         "display_name": "${local.project}-vcn",
         "dns_label": "${local.project}"
       }
+    },
+    "oci_load_balancer_load_balancer": {
+      "main": {
+        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "display_name": "${local.project}-load-balancer",
+        "reserved_ips": [{ "id": "${oci_core_public_ip.main.id}" }],
+        "shape": "flexible",
+        "shape_details": {
+          "maximum_bandwidth_in_mbps": 10,
+          "minimum_bandwidth_in_mbps": 10
+        },
+        "subnet_ids": ["${oci_core_subnet.public.id}"]
+      }
     }
   }
 }
