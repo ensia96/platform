@@ -24,7 +24,7 @@
     "oci_core_route_table": {
       "private": {
         "compartment_id": "${oci_identity_compartment.platform.id}",
-        "display_name": "${local.project}-private-route-table",
+        "display_name": "${local.project}-route-table-private",
         "route_rules": [
           {
             "destination": "0.0.0.0/0",
@@ -41,7 +41,7 @@
       },
       "public": {
         "compartment_id": "${oci_identity_compartment.platform.id}",
-        "display_name": "${local.project}-public-route-table",
+        "display_name": "${local.project}-route-table-public",
         "route_rules": [
           {
             "destination": "0.0.0.0/0",
@@ -68,7 +68,7 @@
       "private": {
         "cidr_block": "10.0.10.0/24",
         "compartment_id": "${oci_identity_compartment.platform.id}",
-        "display_name": "${local.project}-private-subnet",
+        "display_name": "${local.project}-subnet-private",
         "dns_label": "private",
         "prohibit_public_ip_on_vnic": true,
         "route_table_id": "${oci_core_route_table.private.id}",
@@ -77,7 +77,7 @@
       "public": {
         "cidr_block": "10.0.1.0/24",
         "compartment_id": "${oci_identity_compartment.platform.id}",
-        "display_name": "${local.project}-public-subnet",
+        "display_name": "${local.project}-subnet-public",
         "dns_label": "publicmain",
         "prohibit_public_ip_on_vnic": false,
         "route_table_id": "${oci_core_route_table.public.id}",
