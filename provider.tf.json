@@ -1,5 +1,4 @@
 {
-  "locals": { "project": "platform" },
   "provider": { "oci": {} },
   "terraform": {
     "backend": {
