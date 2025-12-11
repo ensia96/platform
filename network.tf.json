@@ -18,6 +18,7 @@
       "main": {
         "compartment_id": "${oci_identity_compartment.platform.id}",
         "display_name": "${local.project}-public-ip",
+        "lifecycle": { "ignore_changes": ["private_ip_id"] },
         "lifetime": "RESERVED"
       }
     },
