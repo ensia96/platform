@@ -1,3 +1,25 @@
 {
-  "locals": { "project": "platform" }
+  "locals": {
+    "project": "platform",
+    "tailscale-acl": {
+      "acls": [{ "action": "accept", "dst": ["*:*"], "src": ["*"] }],
+      "autoApprovers": {
+        "routes": {
+          "${oci_core_subnet.private.cidr_block}": [
+            "${local.tailscale-acl-tag}"
+          ]
+        }
+      },
+      "ssh": [
+        {
+          "action": "accept",
+          "dst": ["autogroup:self", "${local.tailscale-acl-tag}"],
+          "src": ["autogroup:member"],
+          "users": ["autogroup:nonroot"]
+        }
+      ],
+      "tagOwners": { "${local.tailscale-acl-tag}": ["autogroup:member"] }
+    },
+    "tailscale-acl-tag": "tag:bastion"
+  }
 }
