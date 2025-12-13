@@ -1,5 +1,19 @@
 {
   "data": {
+    "oci_core_images": {
+      "ubuntu": {
+        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "filter": {
+          "name": "display_name",
+          "regex": true,
+          "values": ["^Canonical-Ubuntu-([0-9][02468])\\.04-([0-9\\.]+-?)+$"]
+        },
+        "operating_system": "Canonical Ubuntu",
+        "shape": "VM.Standard.E2.1.Micro",
+        "sort_by": "DISPLAYNAME",
+        "sort_order": "DESC"
+      }
+    },
     "oci_core_services": {
       "all_services": {
         "filter": {
@@ -8,6 +22,9 @@
           "values": ["All .* Services In Oracle Services Network"]
         }
       }
+    },
+    "oci_identity_availability_domains": {
+      "main": { "compartment_id": "${var.tenancy_ocid}" }
     }
   }
 }

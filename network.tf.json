@@ -14,6 +14,22 @@
         "vcn_id": "${oci_core_vcn.main.id}"
       }
     },
+    "oci_core_network_security_group": {
+      "bastion-to-global": {
+        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "display_name": "${local.project}-network-security-group-bastion-to-global",
+        "vcn_id": "${oci_core_vcn.main.id}"
+      }
+    },
+    "oci_core_network_security_group_security_rule": {
+      "bastion-to-global": {
+        "description": "Bastion to GLOBAL",
+        "destination": "0.0.0.0/0",
+        "direction": "EGRESS",
+        "network_security_group_id": "${oci_core_network_security_group.bastion-to-global.id}",
+        "protocol": "all"
+      }
+    },
     "oci_core_public_ip": {
       "main": {
         "compartment_id": "${oci_identity_compartment.platform.id}",
