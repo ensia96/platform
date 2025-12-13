@@ -38,6 +38,16 @@
         "user_id": "${oci_identity_user.manager.id}"
       }
     },
-    "tailscale_acl": { "main": { "acl": "${jsonencode(local.tailscale-acl)}" } }
+    "tailscale_acl": {
+      "main": { "acl": "${jsonencode(local.tailscale-acl)}" }
+    },
+    "tailscale_tailnet_key": {
+      "main": {
+        "ephemeral": true,
+        "preauthorized": true,
+        "reusable": true,
+        "tags": ["${local.tailscale-acl-tag}"]
+      }
+    }
   }
 }
