@@ -17,7 +17,7 @@
     "oci_core_network_security_group": {
       "bastion-to-global": {
         "compartment_id": "${oci_identity_compartment.platform.id}",
-        "display_name": "${local.project}-network-security-group-bastion",
+        "display_name": "${local.project}-network-security-group-bastion-to-global",
         "vcn_id": "${oci_core_vcn.main.id}"
       }
     },
