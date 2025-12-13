@@ -8,6 +8,9 @@
           "values": ["All .* Services In Oracle Services Network"]
         }
       }
+    },
+    "oci_identity_availability_domains": {
+      "main": { "compartment_id": "${var.tenancy_ocid}" }
     }
   }
 }
