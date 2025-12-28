@@ -1,5 +1,12 @@
 {
   "resource": {
+    "oci_budget_budget": {
+      "main": {
+        "amount": 1,
+        "compartment_id": "${var.tenancy_ocid}",
+        "reset_period": "MONTHLY"
+      }
+    },
     "oci_identity_compartment": {
       "platform": {
         "compartment_id": "${var.tenancy_ocid}",
