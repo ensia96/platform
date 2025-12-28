@@ -14,7 +14,7 @@
         "cluster_id": "${oci_containerengine_cluster.main.id}",
         "compartment_id": "${oci_identity_compartment.platform.id}",
         "kubernetes_version": "${oci_containerengine_cluster.main.kubernetes_version}",
-        "name": "${local.project}-container-engine-node-pool-main",
+        "name": "${local.project}-node-pool-main",
         "node_config_details": {
           "placement_configs": [
             {
