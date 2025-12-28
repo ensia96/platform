@@ -9,6 +9,34 @@
         "vcn_id": "${oci_core_vcn.main.id}"
       }
     },
+    "oci_containerengine_node_pool": {
+      "main": {
+        "cluster_id": "${oci_containerengine_cluster.main.id}",
+        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "kubernetes_version": "${oci_containerengine_cluster.main.kubernetes_version}",
+        "name": "${local.project}-container-engine-node-pool-main",
+        "node_config_details": {
+          "placement_configs": [
+            {
+              "availability_domain": "${data.oci_identity_availability_domains.main.availability_domains.0.name}",
+              "fault_domains": [
+                "${data.oci_identity_fault_domains.main.fault_domains.0.name}",
+                "${data.oci_identity_fault_domains.main.fault_domains.1.name}",
+                "${data.oci_identity_fault_domains.main.fault_domains.2.name}"
+              ],
+              "subnet_id": "${oci_core_subnet.private.id}"
+            }
+          ],
+          "size": 2
+        },
+        "node_shape": "VM.Standard.A1.Flex",
+        "node_shape_config": { "memory_in_gbs": 12, "ocpus": 2 },
+        "node_source_details": {
+          "image_id": "${data.oci_containerengine_node_pool_option.main.sources.0.image_id}",
+          "source_type": "IMAGE"
+        }
+      }
+    },
     "oci_core_instance": {
       "bastion": {
         "agent_config": {
