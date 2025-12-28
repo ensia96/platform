@@ -9,24 +9,60 @@
       "--cluster-id",
       "${oci_containerengine_cluster.main.id}"
     ],
+    "controller-set": [
+      { "name": "deployment.replicas", "value": 2 },
+      { "name": "priorityClassName", "value": "priority-system" },
+      {
+        "name": "deployment.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.0.weight",
+        "value": 100
+      },
+      {
+        "name": "deployment.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.0.podAffinityTerm.labelSelector.matchExpressions.0.key",
+        "value": "app.kubernetes.io/name"
+      },
+      {
+        "name": "deployment.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.0.podAffinityTerm.labelSelector.matchExpressions.0.operator",
+        "value": "In"
+      },
+      {
+        "name": "deployment.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.0.podAffinityTerm.labelSelector.matchExpressions.0.values.0",
+        "value": "controller"
+      },
+      {
+        "name": "deployment.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.0.podAffinityTerm.topologyKey",
+        "value": "kubernetes.io/hostname"
+      }
+    ],
+    "controller-values": {
+      "resources": {
+        "requests": { "cpu": "100m", "memory": "256Mi" },
+        "limits": { "cpu": "200m", "memory": "512Mi" }
+      },
+      "service": {
+        "annotations": {
+          "service.beta.kubernetes.io/oci-load-balancer-internal": "false",
+          "service.beta.kubernetes.io/oci-load-balancer-ip-address": "${oci_core_public_ip.main.ip_address}",
+          "service.beta.kubernetes.io/oci-load-balancer-id": "${oci_load_balancer_load_balancer.main.id}"
+        }
+      }
+    },
     "log-retention-duration": 30,
-    "project": "platform",
     "monitor-values": {
       "alertmanager": { "enabled": false },
       "grafana": {
         "enabled": true,
         "priorityClassName": "priority-system",
         "resources": {
-          "limits": { "cpu": "200m", "memory": "512Mi" },
-          "requests": { "cpu": "100m", "memory": "256Mi" }
+          "requests": { "cpu": "100m", "memory": "256Mi" },
+          "limits": { "cpu": "200m", "memory": "512Mi" }
         }
       },
       "prometheus": {
         "prometheusSpec": {
           "priorityClassName": "priority-system",
           "resources": {
-            "limits": { "cpu": "400m", "memory": "2Gi" },
-            "requests": { "cpu": "400m", "memory": "2Gi" }
+            "requests": { "cpu": "400m", "memory": "2Gi" },
+            "limits": { "cpu": "400m", "memory": "2Gi" }
           },
           "retention": "3d",
           "storageSpec": { "emptyDir": { "medium": "Memory" } }
@@ -34,11 +70,24 @@
       },
       "prometheusOperator": {
         "resources": {
-          "limits": { "cpu": "100m", "memory": "256Mi" },
-          "requests": { "cpu": "50m", "memory": "128Mi" }
+          "requests": { "cpu": "50m", "memory": "128Mi" },
+          "limits": { "cpu": "100m", "memory": "256Mi" }
+        }
+      },
+      "kube-state-metrics": {
+        "resources": {
+          "requests": { "cpu": "20m", "memory": "64Mi" },
+          "limits": { "cpu": "50m", "memory": "128Mi" }
+        }
+      },
+      "prometheus-node-exporter": {
+        "resources": {
+          "requests": { "cpu": "20m", "memory": "64Mi" },
+          "limits": { "cpu": "50m", "memory": "128Mi" }
         }
       }
     },
+    "project": "platform",
     "tailscale-acl": {
       "acls": [{ "action": "accept", "dst": ["*:*"], "src": ["*"] }],
       "autoApprovers": {
@@ -71,43 +120,6 @@
       "--advertise-routes=${oci_core_subnet.private.cidr_block} \\",
       "--accept-routes \\",
       "--ssh"
-    ],
-    "controller-set": [
-      { "name": "deployment.replicas", "value": 2 },
-      { "name": "priorityClassName", "value": "priority-system" },
-      {
-        "name": "deployment.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.0.weight",
-        "value": 100
-      },
-      {
-        "name": "deployment.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.0.podAffinityTerm.labelSelector.matchExpressions.0.key",
-        "value": "app.kubernetes.io/name"
-      },
-      {
-        "name": "deployment.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.0.podAffinityTerm.labelSelector.matchExpressions.0.operator",
-        "value": "In"
-      },
-      {
-        "name": "deployment.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.0.podAffinityTerm.labelSelector.matchExpressions.0.values.0",
-        "value": "controller"
-      },
-      {
-        "name": "deployment.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.0.podAffinityTerm.topologyKey",
-        "value": "kubernetes.io/hostname"
-      }
-    ],
-    "controller-values": {
-      "resources": {
-        "limits": { "cpu": "200m", "memory": "512Mi" },
-        "requests": { "cpu": "100m", "memory": "256Mi" }
-      },
-      "service": {
-        "annotations": {
-          "service.beta.kubernetes.io/oci-load-balancer-internal": "false",
-          "service.beta.kubernetes.io/oci-load-balancer-ip-address": "${oci_core_public_ip.main.ip_address}",
-          "service.beta.kubernetes.io/oci-load-balancer-id": "${oci_load_balancer_load_balancer.main.id}"
-        }
-      }
-    }
+    ]
   }
 }
