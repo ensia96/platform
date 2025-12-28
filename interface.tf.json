@@ -2,24 +2,17 @@
   "resource": {
     "helm_release": {
       "controller": {
-        "atomic": true,
         "chart": "traefik",
-        "cleanup_on_fail": true,
         "name": "controller",
         "namespace": "${kubernetes_namespace_v1.system.metadata.0.name}",
         "repository": "https://traefik.github.io/charts",
-        "set": "${local.controller-set}",
-        "timeout": 900,
         "values": ["${jsonencode(local.controller-values)}"]
       },
       "monitor": {
-        "atomic": true,
         "chart": "kube-prometheus-stack",
-        "cleanup_on_fail": true,
         "name": "monitor",
         "namespace": "${kubernetes_namespace_v1.system.metadata.0.name}",
         "repository": "https://prometheus-community.github.io/helm-charts",
-        "timeout": 900,
         "values": ["${jsonencode(local.monitor-values)}"]
       }
     },
@@ -32,8 +25,10 @@
         "spec": {
           "limit": [
             {
-              "default": { "cpu": "300m", "memory": "512Mi" },
+              "default": { "cpu": "200m", "memory": "512Mi" },
               "default_request": { "cpu": "50m", "memory": "128Mi" },
+              "max": { "cpu": "300m", "memory": "512Mi" },
+              "min": { "cpu": "10m", "memory": "64Mi" },
               "type": "Container"
             }
           ]
@@ -47,8 +42,9 @@
         "spec": {
           "limit": [
             {
-              "default": { "cpu": "1500m", "memory": "3Gi" },
-              "default_request": { "cpu": "100m", "memory": "512Mi" },
+              "default": { "cpu": "800m", "memory": "3Gi" },
+              "default_request": { "cpu": "250m", "memory": "1.5Gi" },
+              "max": { "cpu": "2000m", "memory": "6Gi" },
               "type": "Container"
             }
           ]
@@ -62,8 +58,8 @@
         "spec": {
           "limit": [
             {
-              "default": { "cpu": "1000m", "memory": "3Gi" },
-              "default_request": { "cpu": "100m", "memory": "128Mi" },
+              "default": { "cpu": "300m", "memory": "1Gi" },
+              "default_request": { "cpu": "100m", "memory": "256Mi" },
               "type": "Container"
             }
           ]
@@ -89,9 +85,9 @@
         "spec": {
           "hard": {
             "limits.cpu": "1000m",
-            "limits.memory": "2Gi",
-            "requests.cpu": "600m",
-            "requests.memory": "1.5Gi"
+            "limits.memory": "4Gi",
+            "requests.cpu": "400m",
+            "requests.memory": "2Gi"
           }
         }
       },
@@ -102,10 +98,10 @@
         },
         "spec": {
           "hard": {
-            "limits.cpu": "8000m",
-            "limits.memory": "20Gi",
-            "requests.cpu": "5000m",
-            "requests.memory": "13Gi"
+            "limits.cpu": "4000m",
+            "limits.memory": "14Gi",
+            "requests.cpu": "1600m",
+            "requests.memory": "8Gi"
           }
         }
       },
@@ -116,10 +112,10 @@
         },
         "spec": {
           "hard": {
-            "limits.cpu": "3000m",
-            "limits.memory": "8Gi",
-            "requests.cpu": "1500m",
-            "requests.memory": "5Gi"
+            "limits.cpu": "2000m",
+            "limits.memory": "6Gi",
+            "requests.cpu": "1000m",
+            "requests.memory": "4Gi"
           }
         }
       }
