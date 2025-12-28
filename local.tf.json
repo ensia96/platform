@@ -64,13 +64,23 @@
     "monitor-values": {
       "alertmanager": { "enabled": false },
       "grafana": { "enabled": false },
+      "kubeControllerManager": { "enabled": false },
+      "kubeProxy": { "enabled": false },
+      "kubeScheduler": { "enabled": false },
+      "kubeStateMetrics": { "enabled": true },
+      "nodeExporter": { "enabled": true },
       "prometheus": {
         "prometheusSpec": {
+          "configReloaderResources": {
+            "limits": { "cpu": "50m", "memory": "64Mi" },
+            "requests": { "cpu": "20m", "memory": "32Mi" }
+          },
           "priorityClassName": "priority-system",
           "resources": {
-            "limits": { "cpu": "500m", "memory": "1.5Gi" },
-            "requests": { "cpu": "200m", "memory": "1Gi" }
+            "limits": { "cpu": "300m", "memory": "800Mi" },
+            "requests": { "cpu": "100m", "memory": "512Mi" }
           },
+          "retention": "1d",
           "storageSpec": { "emptyDir": { "medium": "Memory" } }
         }
       }
