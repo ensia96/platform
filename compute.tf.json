@@ -5,7 +5,7 @@
         "compartment_id": "${oci_identity_compartment.platform.id}",
         "endpoint_config": { "subnet_id": "${oci_core_subnet.private.id}" },
         "kubernetes_version": "${reverse(data.oci_containerengine_cluster_option.main.kubernetes_versions).0}",
-        "name": "${local.project}-container-engine-cluster-main",
+        "name": "${local.project}-cluster-main",
         "vcn_id": "${oci_core_vcn.main.id}"
       }
     },
@@ -14,7 +14,7 @@
         "cluster_id": "${oci_containerengine_cluster.main.id}",
         "compartment_id": "${oci_identity_compartment.platform.id}",
         "kubernetes_version": "${oci_containerengine_cluster.main.kubernetes_version}",
-        "name": "${local.project}-container-engine-node-pool-main",
+        "name": "${local.project}-node-pool-main",
         "node_config_details": {
           "placement_configs": [
             {
