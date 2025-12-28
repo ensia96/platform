@@ -63,6 +63,20 @@
       }
     },
     "oci_logging_log": {
+      "load-balancer-access": {
+        "configuration": {
+          "source": {
+            "category": "access",
+            "resource": "${oci_load_balancer_load_balancer.main.id}",
+            "service": "loadbalancer",
+            "source_type": "OCISERVICE"
+          }
+        },
+        "display_name": "${local.project}-log-load-balancer-access",
+        "log_group_id": "${oci_logging_log_group.main.id}",
+        "log_type": "SERVICE",
+        "retention_duration": "${local.log-retention-duration}"
+      },
       "vcn": {
         "configuration": {
           "source": {
