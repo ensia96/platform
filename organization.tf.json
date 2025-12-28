@@ -113,6 +113,16 @@
       }
     },
     "oci_monitoring_alarm": {
+      "instance-cpu": {
+        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "destinations": ["${oci_ons_notification_topic.main.id}"],
+        "display_name": "${local.project}-alarm-cpu",
+        "is_enabled": true,
+        "metric_compartment_id": "${oci_identity_compartment.platform.id}",
+        "namespace": "oci_computeagent",
+        "query": "cpuutilization[1m].max() > 40",
+        "severity": "CRITICAL"
+      },
       "load-balancer-bandwidth": {
         "compartment_id": "${oci_identity_compartment.platform.id}",
         "destinations": ["${oci_ons_notification_topic.main.id}"],
