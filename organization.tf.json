@@ -1,5 +1,21 @@
 {
   "resource": {
+    "oci_budget_alert_rule": {
+      "main": {
+        "budget_id": "${oci_budget_budget.main.id}",
+        "recipients": "${var.email}",
+        "threshold": 1,
+        "threshold_type": "PERCENTAGE",
+        "type": "FORECAST"
+      }
+    },
+    "oci_budget_budget": {
+      "main": {
+        "amount": 1,
+        "compartment_id": "${var.tenancy_ocid}",
+        "reset_period": "MONTHLY"
+      }
+    },
     "oci_identity_compartment": {
       "platform": {
         "compartment_id": "${var.tenancy_ocid}",
@@ -44,6 +60,112 @@
       "manager": {
         "group_id": "${oci_identity_group.managers.id}",
         "user_id": "${oci_identity_user.manager.id}"
+      }
+    },
+    "oci_logging_log": {
+      "load-balancer-access": {
+        "configuration": {
+          "source": {
+            "category": "access",
+            "resource": "${oci_load_balancer_load_balancer.main.id}",
+            "service": "loadbalancer",
+            "source_type": "OCISERVICE"
+          }
+        },
+        "display_name": "${local.project}-log-load-balancer-access",
+        "log_group_id": "${oci_logging_log_group.main.id}",
+        "log_type": "SERVICE",
+        "retention_duration": "${local.log-retention-duration}"
+      },
+      "load-balancer-error": {
+        "configuration": {
+          "source": {
+            "category": "error",
+            "resource": "${oci_load_balancer_load_balancer.main.id}",
+            "service": "loadbalancer",
+            "source_type": "OCISERVICE"
+          }
+        },
+        "display_name": "${local.project}-log-load-balancer-error",
+        "log_group_id": "${oci_logging_log_group.main.id}",
+        "log_type": "SERVICE",
+        "retention_duration": "${local.log-retention-duration}"
+      },
+      "vcn": {
+        "configuration": {
+          "source": {
+            "category": "all",
+            "resource": "${oci_core_vcn.main.id}",
+            "service": "flowlogs",
+            "source_type": "OCISERVICE"
+          }
+        },
+        "display_name": "${local.project}-log-vcn",
+        "log_group_id": "${oci_logging_log_group.main.id}",
+        "log_type": "SERVICE",
+        "retention_duration": "${local.log-retention-duration}"
+      }
+    },
+    "oci_logging_log_group": {
+      "main": {
+        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "display_name": "${local.project}-log-group-main"
+      }
+    },
+    "oci_monitoring_alarm": {
+      "instance-cpu": {
+        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "destinations": ["${oci_ons_notification_topic.main.id}"],
+        "display_name": "${local.project}-alarm-instance-cpu",
+        "is_enabled": true,
+        "metric_compartment_id": "${oci_identity_compartment.platform.id}",
+        "namespace": "oci_computeagent",
+        "query": "cpuutilization[1m].max() > 40",
+        "severity": "CRITICAL"
+      },
+      "instance-memory": {
+        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "destinations": ["${oci_ons_notification_topic.main.id}"],
+        "display_name": "${local.project}-alarm-instance-memory",
+        "is_enabled": true,
+        "metric_compartment_id": "${oci_identity_compartment.platform.id}",
+        "namespace": "oci_computeagent",
+        "query": "MemoryUtilization[1m].max() > 70",
+        "severity": "CRITICAL"
+      },
+      "load-balancer-bandwidth": {
+        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "destinations": ["${oci_ons_notification_topic.main.id}"],
+        "display_name": "${local.project}-alarm-load-balancer-bandwidth",
+        "is_enabled": true,
+        "metric_compartment_id": "${oci_identity_compartment.platform.id}",
+        "namespace": "oci_lbaas",
+        "query": "InboundBandwidthUsage[1m]{resourceId = \"${oci_load_balancer_load_balancer.main.id}\"}.max() > 8",
+        "severity": "WARNING"
+      },
+      "load-balancer-health": {
+        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "destinations": ["${oci_ons_notification_topic.main.id}"],
+        "display_name": "${local.project}-alarm-load-balancer-health",
+        "is_enabled": true,
+        "metric_compartment_id": "${oci_identity_compartment.platform.id}",
+        "namespace": "oci_lbaas",
+        "query": "UnHealthyBackendServerCount[1m]{resourceId = \"${oci_load_balancer_load_balancer.main.id}\"}.max() > 0",
+        "severity": "CRITICAL"
+      }
+    },
+    "oci_ons_notification_topic": {
+      "main": {
+        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "name": "${local.project}-notification-topic-main"
+      }
+    },
+    "oci_ons_subscription": {
+      "email": {
+        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "endpoint": "${var.email}",
+        "protocol": "EMAIL",
+        "topic_id": "${oci_ons_notification_topic.main.id}"
       }
     },
     "tailscale_acl": {
