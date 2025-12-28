@@ -54,9 +54,7 @@
         "create_vnic_details": {
           "assign_public_ip": false,
           "display_name": "${local.project}-bastion-virtual-network-interface-card",
-          "nsg_ids": [
-            "${oci_core_network_security_group.bastion-to-global.id}"
-          ],
+          "nsg_ids": ["${oci_core_network_security_group.bastion.id}"],
           "subnet_id": "${oci_core_subnet.private.id}"
         },
         "display_name": "${local.project}-instance-bastion",
