@@ -1,5 +1,28 @@
 {
-  "provider": { "oci": {}, "tailscale": {} },
+  "provider": {
+    "helm": {
+      "kubernetes": {
+        "cluster_ca_certificate": "${local.cluster-certificate}",
+        "exec": {
+          "api_version": "${local.cluster-api-version}",
+          "args": "${local.cluster-command-arguments}",
+          "command": "oci"
+        },
+        "host": "${yamldecode(data.oci_containerengine_cluster_kube_config.main.content).clusters.0.cluster.server}"
+      }
+    },
+    "kubernetes": {
+      "cluster_ca_certificate": "${local.cluster-certificate}",
+      "exec": {
+        "api_version": "${local.cluster-api-version}",
+        "args": "${local.cluster-command-arguments}",
+        "command": "oci"
+      },
+      "host": "${yamldecode(data.oci_containerengine_cluster_kube_config.main.content).clusters.0.cluster.server}"
+    },
+    "oci": {},
+    "tailscale": {}
+  },
   "terraform": {
     "backend": {
       "oci": {
@@ -9,6 +32,8 @@
       }
     },
     "required_providers": {
+      "helm": { "source": "hashicorp/helm" },
+      "kubernetes": { "source": "hashicorp/kubernetes" },
       "oci": { "source": "oracle/oci" },
       "tailscale": { "source": "tailscale/tailscale" }
     }
