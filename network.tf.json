@@ -69,6 +69,13 @@
           "destination_port_range": { "max": 12250, "min": 12250 }
         }
       },
+      "cluster-to-global": {
+        "destination": "0.0.0.0/0",
+        "destination_type": "CIDR_BLOCK",
+        "direction": "EGRESS",
+        "network_security_group_id": "${oci_core_network_security_group.cluster.id}",
+        "protocol": "all"
+      },
       "cluster-to-worker": {
         "destination": "${oci_core_network_security_group.worker.id}",
         "destination_type": "NETWORK_SECURITY_GROUP",
