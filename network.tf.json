@@ -38,6 +38,16 @@
         "direction": "EGRESS",
         "network_security_group_id": "${oci_core_network_security_group.bastion.id}",
         "protocol": "all"
+      },
+      "cluster-from-bastion": {
+        "direction": "INGRESS",
+        "network_security_group_id": "${oci_core_network_security_group.cluster.id}",
+        "protocol": "6",
+        "source": "${oci_core_network_security_group.bastion.id}",
+        "source_type": "NETWORK_SECURITY_GROUP",
+        "tcp_options": {
+          "destination_port_range": { "max": 6443, "min": 6443 }
+        }
       }
     },
     "oci_core_public_ip": {
