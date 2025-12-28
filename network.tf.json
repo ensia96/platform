@@ -103,6 +103,14 @@
         "protocol": "all",
         "source": "${oci_core_network_security_group.worker.id}",
         "source_type": "NETWORK_SECURITY_GROUP"
+      },
+      "worker-icmp": {
+        "direction": "INGRESS",
+        "icmp_options": { "code": 4, "type": 3 },
+        "network_security_group_id": "${oci_core_network_security_group.worker.id}",
+        "protocol": "1",
+        "source": "0.0.0.0/0",
+        "source_type": "CIDR_BLOCK"
       }
     },
     "oci_core_public_ip": {
