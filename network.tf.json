@@ -24,6 +24,11 @@
         "compartment_id": "${oci_identity_compartment.platform.id}",
         "display_name": "${local.project}-network-security-group-cluster",
         "vcn_id": "${oci_core_vcn.main.id}"
+      },
+      "worker": {
+        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "display_name": "${local.project}-network-security-group-worker",
+        "vcn_id": "${oci_core_vcn.main.id}"
       }
     },
     "oci_core_network_security_group_security_rule": {
