@@ -15,6 +15,14 @@
       }
     },
     "oci_identity_policy": {
+      "cluster": {
+        "compartment_id": "${var.tenancy_ocid}",
+        "description": "manage resources",
+        "name": "${local.project}-identity-policy-cluster",
+        "statements": [
+          "Allow service OKE to manage all-resources in compartment id ${oci_identity_compartment.platform.id}"
+        ]
+      },
       "manager": {
         "compartment_id": "${var.tenancy_ocid}",
         "description": "manage ${local.project}",

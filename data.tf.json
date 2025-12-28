@@ -1,5 +1,16 @@
 {
   "data": {
+    "oci_containerengine_cluster_option": {
+      "main": { "cluster_option_id": "all" }
+    },
+    "oci_containerengine_node_pool_option": {
+      "main": {
+        "compartment_id": "${var.tenancy_ocid}",
+        "node_pool_k8s_version": "${oci_containerengine_cluster.main.kubernetes_version}",
+        "node_pool_option_id": "all",
+        "node_pool_os_arch": "AARCH64"
+      }
+    },
     "oci_core_images": {
       "ubuntu": {
         "compartment_id": "${oci_identity_compartment.platform.id}",
@@ -25,6 +36,12 @@
     },
     "oci_identity_availability_domains": {
       "main": { "compartment_id": "${var.tenancy_ocid}" }
+    },
+    "oci_identity_fault_domains": {
+      "main": {
+        "availability_domain": "${data.oci_identity_availability_domains.main.availability_domains.0.name}",
+        "compartment_id": "${var.tenancy_ocid}"
+      }
     }
   }
 }
