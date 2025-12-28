@@ -1,5 +1,14 @@
 {
   "resource": {
+    "oci_budget_alert_rule": {
+      "main": {
+        "budget_id": "${oci_budget_budget.main.id}",
+        "recipients": "${var.email}",
+        "threshold": 1,
+        "threshold_type": "PERCENTAGE",
+        "type": "FORECAST"
+      }
+    },
     "oci_budget_budget": {
       "main": {
         "amount": 1,
