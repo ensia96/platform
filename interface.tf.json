@@ -1,18 +1,12 @@
 {
   "resource": {
+    "kubernetes_namespace_v1": {
+      "system": { "metadata": { "name": "system" } }
+    },
     "kubernetes_priority_class_v1": {
-      "system": {
-        "metadata": { "name": "priority-system" },
-        "value": 100
-      },
-      "main": {
-        "metadata": { "name": "priority-main" },
-        "value": 10
-      },
-      "dev": {
-        "metadata": { "name": "priority-dev" },
-        "value": 1
-      }
+      "dev": { "metadata": { "name": "priority-dev" }, "value": 1 },
+      "main": { "metadata": { "name": "priority-main" }, "value": 10 },
+      "system": { "metadata": { "name": "priority-system" }, "value": 100 }
     }
   }
 }
