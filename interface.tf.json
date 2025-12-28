@@ -2,7 +2,8 @@
   "resource": {
     "kubernetes_namespace_v1": {
       "system": { "metadata": { "name": "system" } },
-      "main": { "metadata": { "name": "main" } }
+      "main": { "metadata": { "name": "main" } },
+      "dev": { "metadata": { "name": "dev" } }
     },
     "kubernetes_priority_class_v1": {
       "dev": { "metadata": { "name": "priority-dev" }, "value": 1 },
