@@ -1,5 +1,17 @@
 {
-  "provider": { "oci": {}, "tailscale": {} },
+  "provider": {
+    "kubernetes": {
+      "cluster_ca_certificate": "${local.cluster-certificate}",
+      "exec": {
+        "api_version": "${local.cluster-api-version}",
+        "args": "${local.cluster-command-arguments}",
+        "command": "oci"
+      },
+      "host": "${oci_containerengine_cluster.main.endpoints.0.public_endpoint}"
+    },
+    "oci": {},
+    "tailscale": {}
+  },
   "terraform": {
     "backend": {
       "oci": {
@@ -9,6 +21,7 @@
       }
     },
     "required_providers": {
+      "kubernetes": { "source": "hashicorp/kubernetes" },
       "oci": { "source": "oracle/oci" },
       "tailscale": { "source": "tailscale/tailscale" }
     }
