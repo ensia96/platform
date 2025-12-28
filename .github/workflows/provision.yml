@@ -37,12 +37,6 @@ jobs:
       - name: Setup Terraform and Authenticate
         uses: ./.github/actions/setup
         with:
-          private_key: ${{ secrets.PRIVATE_KEY }}
-          private_key_path: ${{ secrets.PRIVATE_KEY_PATH }}
-          user_ocid: ${{ secrets.USER_OCID }}
-          tenancy_ocid: ${{ secrets.TENANCY_OCID }}
-          fingerprint: ${{ secrets.FINGERPRINT }}
-          region: ${{ secrets.REGION }}
           oci_fingerprint: ${{ secrets.FINGERPRINT }}
           oci_private_key: ${{ secrets.PRIVATE_KEY }}
           oci_private_key_path: ${{ secrets.PRIVATE_KEY_PATH }}
@@ -97,12 +91,6 @@ jobs:
       - name: Setup Terraform and Authenticate
         uses: ./.github/actions/setup
         with:
-          private_key: ${{ secrets.PRIVATE_KEY }}
-          private_key_path: ${{ secrets.PRIVATE_KEY_PATH }}
-          user_ocid: ${{ secrets.USER_OCID }}
-          tenancy_ocid: ${{ secrets.TENANCY_OCID }}
-          fingerprint: ${{ secrets.FINGERPRINT }}
-          region: ${{ secrets.REGION }}
           oci_fingerprint: ${{ secrets.FINGERPRINT }}
           oci_private_key: ${{ secrets.PRIVATE_KEY }}
           oci_private_key_path: ${{ secrets.PRIVATE_KEY_PATH }}
