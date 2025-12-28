@@ -1,20 +1,20 @@
 {
   "resource": {
     "helm_release": {
-      "prometheus": {
+      "monitor": {
         "chart": "kube-prometheus-stack",
-        "name": "prometheus",
+        "name": "monitor",
         "namespace": "${kubernetes_namespace_v1.system.metadata.0.name}",
         "repository": "https://prometheus-community.github.io/helm-charts",
-        "values": ["${jsonencode(local.prometheus-values)}"]
+        "values": ["${jsonencode(local.monitor-values)}"]
       },
-      "traefik": {
+      "controller": {
         "chart": "traefik",
-        "name": "traefik",
+        "name": "controller",
         "namespace": "${kubernetes_namespace_v1.system.metadata.0.name}",
         "repository": "https://traefik.github.io/charts",
-        "set": "${local.traefik-set}",
-        "values": ["${jsonencode(local.traefik-values)}"]
+        "set": "${local.controller-set}",
+        "values": ["${jsonencode(local.controller-values)}"]
       }
     },
     "kubernetes_limit_range_v1": {

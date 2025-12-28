@@ -11,11 +11,11 @@
     ],
     "log-retention-duration": 30,
     "project": "platform",
-    "prometheus-values": {
+    "monitor-values": {
       "alertmanager": { "enabled": false },
       "grafana": {
         "enabled": true,
-        "priorityClassName": "system-priority",
+        "priorityClassName": "priority-system",
         "resources": {
           "limits": { "cpu": "200m", "memory": "512Mi" },
           "requests": { "cpu": "100m", "memory": "256Mi" }
@@ -23,7 +23,7 @@
       },
       "prometheus": {
         "prometheusSpec": {
-          "priorityClassName": "system-priority",
+          "priorityClassName": "priority-system",
           "resources": {
             "limits": { "cpu": "400m", "memory": "2Gi" },
             "requests": { "cpu": "400m", "memory": "2Gi" }
@@ -72,9 +72,9 @@
       "--accept-routes \\",
       "--ssh"
     ],
-    "traefik-set": [
+    "controller-set": [
       { "name": "deployment.replicas", "value": 2 },
-      { "name": "priorityClassName", "value": "system-priority" },
+      { "name": "priorityClassName", "value": "priority-system" },
       {
         "name": "deployment.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.0.weight",
         "value": 100
@@ -89,14 +89,14 @@
       },
       {
         "name": "deployment.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.0.podAffinityTerm.labelSelector.matchExpressions.0.values.0",
-        "value": "traefik"
+        "value": "controller"
       },
       {
         "name": "deployment.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.0.podAffinityTerm.topologyKey",
         "value": "kubernetes.io/hostname"
       }
     ],
-    "traefik-values": {
+    "controller-values": {
       "resources": {
         "limits": { "cpu": "200m", "memory": "512Mi" },
         "requests": { "cpu": "100m", "memory": "256Mi" }
