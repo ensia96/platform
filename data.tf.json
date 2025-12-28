@@ -28,6 +28,12 @@
     },
     "oci_identity_availability_domains": {
       "main": { "compartment_id": "${var.tenancy_ocid}" }
+    },
+    "oci_identity_fault_domains": {
+      "main": {
+        "availability_domain": "${data.oci_identity_availability_domains.main.availability_domains.0.name}",
+        "compartment_id": "${var.tenancy_ocid}"
+      }
     }
   }
 }
