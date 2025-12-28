@@ -5,6 +5,14 @@ inputs:
     required: true
   private_key_path:
     required: true
+  user_ocid:
+    required: true
+  tenancy_ocid:
+    required: true
+  fingerprint:
+    required: true
+  region:
+    required: true
 
 runs:
   using: "composite"
@@ -12,11 +20,26 @@ runs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
 
-    - name: Create OCI Private Key File
+    - name: Install OCI CLI
       shell: bash
       run: |
+        python3 -m pip install oci-cli --quiet
+
+    - name: Create OCI Config and Private Key File
+      shell: bash
+      run: |
+        mkdir -p ~/.oci
         echo "${{ inputs.private_key }}" > ${{ inputs.private_key_path }}
         chmod 600 ${{ inputs.private_key_path }}
+        cat <<EOF > ~/.oci/config
+        [DEFAULT]
+        user=${{ inputs.user_ocid }}
+        fingerprint=${{ inputs.fingerprint }}
+        tenancy=${{ inputs.tenancy_ocid }}
+        region=${{ inputs.region }}
+        key_file=${{ inputs.private_key_path }}
+        EOF
+        chmod 600 ~/.oci/config
 
     - name: Terraform Init
       shell: bash
