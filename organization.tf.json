@@ -13,7 +13,9 @@
       "main": {
         "amount": 1,
         "compartment_id": "${var.tenancy_ocid}",
-        "reset_period": "MONTHLY"
+        "reset_period": "MONTHLY",
+        "target_type": "COMPARTMENT",
+        "targets": ["${var.tenancy_ocid}"]
       }
     },
     "oci_identity_compartment": {
