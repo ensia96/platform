@@ -27,8 +27,7 @@ runs:
     - name: Install OCI CLI
       shell: bash
       run: |
-        bash -c "$(curl -L https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh)" -- --accept-all-defaults
-        echo "/home/runner/bin" >> $GITHUB_PATH
+        python3 -m pip install oci-cli --quiet
 
     - name: Create OCI Config
       shell: bash
