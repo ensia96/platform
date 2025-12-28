@@ -93,16 +93,30 @@
         "log_type": "SERVICE",
         "retention_duration": "${local.log-retention-duration}"
       },
-      "vcn": {
+      "subnet-private": {
         "configuration": {
           "source": {
             "category": "all",
-            "resource": "${oci_core_vcn.main.id}",
+            "resource": "${oci_core_subnet.private.id}",
             "service": "flowlogs",
             "source_type": "OCISERVICE"
           }
         },
-        "display_name": "${local.project}-log-vcn",
+        "display_name": "${local.project}-log-subnet-private",
+        "log_group_id": "${oci_logging_log_group.main.id}",
+        "log_type": "SERVICE",
+        "retention_duration": "${local.log-retention-duration}"
+      },
+      "subnet-public": {
+        "configuration": {
+          "source": {
+            "category": "all",
+            "resource": "${oci_core_subnet.public.id}",
+            "service": "flowlogs",
+            "source_type": "OCISERVICE"
+          }
+        },
+        "display_name": "${local.project}-log-subnet-public",
         "log_group_id": "${oci_logging_log_group.main.id}",
         "log_type": "SERVICE",
         "retention_duration": "${local.log-retention-duration}"
