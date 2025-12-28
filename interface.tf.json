@@ -8,6 +8,10 @@
       "main": {
         "metadata": { "name": "priority-main" },
         "value": 10
+      },
+      "dev": {
+        "metadata": { "name": "priority-dev" },
+        "value": 1
       }
     }
   }
