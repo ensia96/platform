@@ -1,17 +1,21 @@
 name: Setup Terraform and Authenticate
 
 inputs:
-  private_key:
+  oci_fingerprint:
     required: true
-  private_key_path:
+  oci_private_key:
     required: true
-  user_ocid:
+  oci_private_key_path:
     required: true
-  tenancy_ocid:
+  oci_region:
     required: true
-  fingerprint:
+  oci_tenancy_ocid:
     required: true
-  region:
+  oci_user_ocid:
+    required: true
+  tailscale_oauth_client_id:
+    required: true
+  tailscale_oauth_client_secret:
     required: true
 
 runs:
@@ -25,21 +29,27 @@ runs:
       run: |
         python3 -m pip install oci-cli --quiet
 
-    - name: Create OCI Config and Private Key File
+    - name: Create OCI Config
       shell: bash
       run: |
         mkdir -p ~/.oci
-        echo "${{ inputs.private_key }}" > ${{ inputs.private_key_path }}
-        chmod 600 ${{ inputs.private_key_path }}
+        echo "${{ inputs.oci_private_key }}" > ${{ inputs.oci_private_key_path }}
+        chmod 600 ${{ inputs.oci_private_key_path }}
         cat <<EOF > ~/.oci/config
         [DEFAULT]
-        user=${{ inputs.user_ocid }}
-        fingerprint=${{ inputs.fingerprint }}
-        tenancy=${{ inputs.tenancy_ocid }}
-        region=${{ inputs.region }}
-        key_file=${{ inputs.private_key_path }}
+        user=${{ inputs.oci_user_ocid }}
+        fingerprint=${{ inputs.oci_fingerprint }}
+        tenancy=${{ inputs.oci_tenancy_ocid }}
+        region=${{ inputs.oci_region }}
+        key_file=${{ inputs.oci_private_key_path }}
         EOF
-        chmod 600 ~/.oci/config
+
+    - name: Connect to Tailscale
+      uses: tailscale/github-action@v2
+      with:
+        oauth-client-id: ${{ inputs.tailscale_oauth_client_id }}
+        oauth-secret: ${{ inputs.tailscale_oauth_client_secret }}
+        tags: tag:bastion
 
     - name: Terraform Init
       shell: bash
