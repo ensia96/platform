@@ -1,5 +1,8 @@
 {
   "data": {
+    "oci_containerengine_cluster_option": {
+      "main": { "cluster_option_id": "all" }
+    },
     "oci_core_images": {
       "ubuntu": {
         "compartment_id": "${oci_identity_compartment.platform.id}",
