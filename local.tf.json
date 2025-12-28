@@ -46,8 +46,8 @@
       },
       "priorityClassName": "priority-system",
       "resources": {
-        "limits": { "cpu": "300m", "memory": "512Mi" },
-        "requests": { "cpu": "100m", "memory": "256Mi" }
+        "limits": { "cpu": "200m", "memory": "256Mi" },
+        "requests": { "cpu": "100m", "memory": "128Mi" }
       },
       "service": {
         "annotations": {
@@ -68,7 +68,6 @@
       "kubeProxy": { "enabled": false },
       "kubeScheduler": { "enabled": false },
       "kubeStateMetrics": { "enabled": true },
-      "nodeExporter": { "enabled": true },
       "prometheus": {
         "prometheusSpec": {
           "configReloaderResources": {
@@ -85,13 +84,21 @@
         }
       },
       "prometheusOperator": {
-        "admissionWebhooks": {
-          "patch": {
-            "resources": {
-              "limits": { "cpu": "100m", "memory": "128Mi" },
-              "requests": { "cpu": "50m", "memory": "64Mi" }
-            }
-          }
+        "resources": {
+          "limits": { "cpu": "100m", "memory": "256Mi" },
+          "requests": { "cpu": "50m", "memory": "128Mi" }
+        }
+      },
+      "nodeExporter": {
+        "resources": {
+          "limits": { "cpu": "50m", "memory": "128Mi" },
+          "requests": { "cpu": "20m", "memory": "64Mi" }
+        }
+      },
+      "kube-state-metrics": {
+        "resources": {
+          "limits": { "cpu": "100m", "memory": "128Mi" },
+          "requests": { "cpu": "50m", "memory": "64Mi" }
         }
       }
     },
