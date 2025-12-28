@@ -112,6 +112,12 @@
         "display_name": "${local.project}-log-group-main"
       }
     },
+    "oci_ons_notification_topic": {
+      "main": {
+        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "name": "${local.project}-notification-topic-main"
+      }
+    },
     "tailscale_acl": {
       "main": { "acl": "${jsonencode(local.tailscale-acl)}" }
     },
