@@ -45,18 +45,18 @@
       "--ssh"
     ],
     "traefik-values": {
+      "resources": {
+        "limits": { "cpu": "200m", "memory": "512Mi" },
+        "requests": { "cpu": "100m", "memory": "256Mi" }
+      },
       "service": {
         "annotations": {
           "service.beta.kubernetes.io/oci-load-balancer-internal": "false",
+          "service.beta.kubernetes.io/oci-load-balancer-ip-address": "YOUR_RESERVED_PUBLIC_IP",
           "service.beta.kubernetes.io/oci-load-balancer-shape": "flexible",
-          "service.beta.kubernetes.io/oci-load-balancer-shape-flex-min": "10",
           "service.beta.kubernetes.io/oci-load-balancer-shape-flex-max": "10",
-          "service.beta.kubernetes.io/oci-load-balancer-ip-address": "YOUR_RESERVED_PUBLIC_IP"
+          "service.beta.kubernetes.io/oci-load-balancer-shape-flex-min": "10"
         }
-      },
-      "resources": {
-        "requests": { "cpu": "100m", "memory": "256Mi" },
-        "limits": { "cpu": "200m", "memory": "512Mi" }
       }
     }
   }
