@@ -126,7 +126,7 @@
       "instance-memory": {
         "compartment_id": "${oci_identity_compartment.platform.id}",
         "destinations": ["${oci_ons_notification_topic.main.id}"],
-        "display_name": "${local.project}-alarm-memory",
+        "display_name": "${local.project}-alarm-instance-memory",
         "is_enabled": true,
         "metric_compartment_id": "${oci_identity_compartment.platform.id}",
         "namespace": "oci_computeagent",
