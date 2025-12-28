@@ -58,8 +58,8 @@
         "spec": {
           "limit": [
             {
-              "default": { "cpu": "300m", "memory": "1Gi" },
-              "default_request": { "cpu": "100m", "memory": "256Mi" },
+              "default": { "cpu": "50m", "memory": "128Mi" },
+              "default_request": { "cpu": "20m", "memory": "64Mi" },
               "type": "Container"
             }
           ]
