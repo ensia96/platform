@@ -1,0 +1,10 @@
+{
+  "resource": {
+    "kubernetes_priority_class_v1": {
+      "system": {
+        "metadata": { "name": "priority-system" },
+        "value": 100
+      }
+    }
+  }
+}
