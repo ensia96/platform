@@ -118,6 +118,14 @@
         "name": "${local.project}-notification-topic-main"
       }
     },
+    "oci_ons_subscription": {
+      "email": {
+        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "endpoint": "${var.email}",
+        "protocol": "EMAIL",
+        "topic_id": "${oci_ons_notification_topic.main.id}"
+      }
+    },
     "tailscale_acl": {
       "main": { "acl": "${jsonencode(local.tailscale-acl)}" }
     },
