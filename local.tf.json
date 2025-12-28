@@ -104,10 +104,8 @@
       "service": {
         "annotations": {
           "service.beta.kubernetes.io/oci-load-balancer-internal": "false",
-          "service.beta.kubernetes.io/oci-load-balancer-ip-address": "YOUR_RESERVED_PUBLIC_IP",
-          "service.beta.kubernetes.io/oci-load-balancer-shape": "flexible",
-          "service.beta.kubernetes.io/oci-load-balancer-shape-flex-max": "10",
-          "service.beta.kubernetes.io/oci-load-balancer-shape-flex-min": "10"
+          "service.beta.kubernetes.io/oci-load-balancer-ip-address": "${oci_core_public_ip.main.ip_address}",
+          "service.beta.kubernetes.io/oci-load-balancer-id": "${oci_load_balancer_load_balancer.main.id}"
         }
       }
     }
