@@ -1,5 +1,22 @@
 {
   "resource": {
+    "kubernetes_limit_range_v1": {
+      "system": {
+        "metadata": {
+          "name": "limit-system",
+          "namespace": "${kubernetes_namespace_v1.system.metadata[0].name}"
+        },
+        "spec": {
+          "limit": [
+            {
+              "default": { "cpu": "1000m", "memory": "3Gi" },
+              "default_request": { "cpu": "100m", "memory": "128Mi" },
+              "type": "Container"
+            }
+          ]
+        }
+      }
+    },
     "kubernetes_namespace_v1": {
       "dev": { "metadata": { "name": "dev" } },
       "main": { "metadata": { "name": "main" } },
