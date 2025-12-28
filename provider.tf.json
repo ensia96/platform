@@ -1,5 +1,16 @@
 {
   "provider": {
+    "helm": {
+      "kubernetes": {
+        "cluster_ca_certificate": "${local.cluster-certificate}",
+        "exec": {
+          "api_version": "${local.cluster-api-version}",
+          "args": "${local.cluster-arguments}",
+          "command": "oci"
+        },
+        "host": "${oci_containerengine_cluster.main.endpoints.0.public_endpoint}"
+      }
+    },
     "kubernetes": {
       "cluster_ca_certificate": "${local.cluster-certificate}",
       "exec": {
@@ -21,6 +32,7 @@
       }
     },
     "required_providers": {
+      "helm": { "source": "hashicorp/helm" },
       "kubernetes": { "source": "hashicorp/kubernetes" },
       "oci": { "source": "oracle/oci" },
       "tailscale": { "source": "tailscale/tailscale" }
