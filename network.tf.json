@@ -118,6 +118,13 @@
         "protocol": "1",
         "source": "0.0.0.0/0",
         "source_type": "CIDR_BLOCK"
+      },
+      "worker-to-global": {
+        "destination": "0.0.0.0/0",
+        "destination_type": "CIDR_BLOCK",
+        "direction": "EGRESS",
+        "network_security_group_id": "${oci_core_network_security_group.worker.id}",
+        "protocol": "all"
       }
     },
     "oci_core_public_ip": {
