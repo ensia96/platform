@@ -9,8 +9,8 @@
       }
     },
     "required_providers": {
-      "oci": { "source": "oracle/oci", "version": "~> 7.19.0" },
-      "tailscale": { "source": "tailscale/tailscale", "version": "~> 0.24.0" }
+      "oci": { "source": "oracle/oci" },
+      "tailscale": { "source": "tailscale/tailscale" }
     }
   }
 }
