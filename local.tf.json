@@ -11,6 +11,34 @@
     ],
     "log-retention-duration": 30,
     "project": "platform",
+    "prometheus-values": {
+      "alertmanager": { "enabled": false },
+      "grafana": {
+        "enabled": true,
+        "priorityClassName": "system-priority",
+        "resources": {
+          "limits": { "cpu": "200m", "memory": "512Mi" },
+          "requests": { "cpu": "100m", "memory": "256Mi" }
+        }
+      },
+      "prometheus": {
+        "prometheusSpec": {
+          "priorityClassName": "system-priority",
+          "resources": {
+            "limits": { "cpu": "400m", "memory": "2Gi" },
+            "requests": { "cpu": "400m", "memory": "2Gi" }
+          },
+          "retention": "3d",
+          "storageSpec": { "emptyDir": { "medium": "Memory" } }
+        }
+      },
+      "prometheusOperator": {
+        "resources": {
+          "limits": { "cpu": "100m", "memory": "256Mi" },
+          "requests": { "cpu": "50m", "memory": "128Mi" }
+        }
+      }
+    },
     "tailscale-acl": {
       "acls": [{ "action": "accept", "dst": ["*:*"], "src": ["*"] }],
       "autoApprovers": {
