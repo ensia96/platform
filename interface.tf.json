@@ -4,6 +4,10 @@
       "system": {
         "metadata": { "name": "priority-system" },
         "value": 100
+      },
+      "main": {
+        "metadata": { "name": "priority-main" },
+        "value": 10
       }
     }
   }
