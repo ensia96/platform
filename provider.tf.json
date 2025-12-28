@@ -18,7 +18,7 @@
         "args": "${local.cluster-command-arguments}",
         "command": "oci"
       },
-      "host": "${oci_containerengine_cluster.main.endpoints.0.public_endpoint}"
+      "host": "${yamldecode(data.oci_containerengine_cluster_kube_config.main.content).clusters.0.cluster.server}"
     },
     "oci": {},
     "tailscale": {}
