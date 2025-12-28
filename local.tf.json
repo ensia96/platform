@@ -37,7 +37,11 @@
         "--global.sendanonymoususage=false"
       ],
       "ports": {
-        "web": { "redirectTo": "websecure" },
+        "web": {
+          "redirections": {
+            "entryPoint": { "scheme": "https", "to": "websecure" }
+          }
+        },
         "websecure": { "tls": { "enabled": true } }
       },
       "priorityClassName": "priority-system",
