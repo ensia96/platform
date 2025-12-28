@@ -1,6 +1,6 @@
 {
   "locals": {
-    "log-retention-duration": 7,
+    "log-retention-duration": 30,
     "project": "platform",
     "tailscale-acl": {
       "acls": [{ "action": "accept", "dst": ["*:*"], "src": ["*"] }],
