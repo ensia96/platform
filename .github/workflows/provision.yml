@@ -43,6 +43,14 @@ jobs:
           tenancy_ocid: ${{ secrets.TENANCY_OCID }}
           fingerprint: ${{ secrets.FINGERPRINT }}
           region: ${{ secrets.REGION }}
+          oci_fingerprint: ${{ secrets.FINGERPRINT }}
+          oci_private_key: ${{ secrets.PRIVATE_KEY }}
+          oci_private_key_path: ${{ secrets.PRIVATE_KEY_PATH }}
+          oci_region: ${{ secrets.REGION }}
+          oci_tenancy_ocid: ${{ secrets.TENANCY_OCID }}
+          oci_user_ocid: ${{ secrets.USER_OCID }}
+          tailscale_oauth_client_id: ${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}
+          tailscale_oauth_client_secret: ${{ secrets.TAILSCALE_OAUTH_CLIENT_SECRET }}
 
       - name: Terraform Validate
         run: terraform validate -no-color
@@ -95,6 +103,14 @@ jobs:
           tenancy_ocid: ${{ secrets.TENANCY_OCID }}
           fingerprint: ${{ secrets.FINGERPRINT }}
           region: ${{ secrets.REGION }}
+          oci_fingerprint: ${{ secrets.FINGERPRINT }}
+          oci_private_key: ${{ secrets.PRIVATE_KEY }}
+          oci_private_key_path: ${{ secrets.PRIVATE_KEY_PATH }}
+          oci_region: ${{ secrets.REGION }}
+          oci_tenancy_ocid: ${{ secrets.TENANCY_OCID }}
+          oci_user_ocid: ${{ secrets.USER_OCID }}
+          tailscale_oauth_client_id: ${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}
+          tailscale_oauth_client_secret: ${{ secrets.TAILSCALE_OAUTH_CLIENT_SECRET }}
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
