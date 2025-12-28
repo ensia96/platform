@@ -15,9 +15,19 @@
       }
     },
     "oci_core_network_security_group": {
-      "bastion-to-global": {
+      "bastion": {
         "compartment_id": "${oci_identity_compartment.platform.id}",
-        "display_name": "${local.project}-network-security-group-bastion-to-global",
+        "display_name": "${local.project}-network-security-group-bastion",
+        "vcn_id": "${oci_core_vcn.main.id}"
+      },
+      "cluster": {
+        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "display_name": "${local.project}-network-security-group-cluster",
+        "vcn_id": "${oci_core_vcn.main.id}"
+      },
+      "worker": {
+        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "display_name": "${local.project}-network-security-group-worker",
         "vcn_id": "${oci_core_vcn.main.id}"
       }
     },
@@ -26,7 +36,94 @@
         "description": "Bastion to GLOBAL",
         "destination": "0.0.0.0/0",
         "direction": "EGRESS",
-        "network_security_group_id": "${oci_core_network_security_group.bastion-to-global.id}",
+        "network_security_group_id": "${oci_core_network_security_group.bastion.id}",
+        "protocol": "all"
+      },
+      "cluster-from-bastion": {
+        "direction": "INGRESS",
+        "network_security_group_id": "${oci_core_network_security_group.cluster.id}",
+        "protocol": "6",
+        "source": "${oci_core_network_security_group.bastion.id}",
+        "source_type": "NETWORK_SECURITY_GROUP",
+        "tcp_options": {
+          "destination_port_range": { "max": 6443, "min": 6443 }
+        }
+      },
+      "cluster-from-worker-api": {
+        "direction": "INGRESS",
+        "network_security_group_id": "${oci_core_network_security_group.cluster.id}",
+        "protocol": "6",
+        "source": "${oci_core_network_security_group.worker.id}",
+        "source_type": "NETWORK_SECURITY_GROUP",
+        "tcp_options": {
+          "destination_port_range": { "max": 6443, "min": 6443 }
+        }
+      },
+      "cluster-from-worker-management": {
+        "direction": "INGRESS",
+        "network_security_group_id": "${oci_core_network_security_group.cluster.id}",
+        "protocol": "6",
+        "source": "${oci_core_network_security_group.worker.id}",
+        "source_type": "NETWORK_SECURITY_GROUP",
+        "tcp_options": {
+          "destination_port_range": { "max": 12250, "min": 12250 }
+        }
+      },
+      "cluster-to-global": {
+        "destination": "0.0.0.0/0",
+        "destination_type": "CIDR_BLOCK",
+        "direction": "EGRESS",
+        "network_security_group_id": "${oci_core_network_security_group.cluster.id}",
+        "protocol": "all"
+      },
+      "cluster-to-worker": {
+        "destination": "${oci_core_network_security_group.worker.id}",
+        "destination_type": "NETWORK_SECURITY_GROUP",
+        "direction": "EGRESS",
+        "network_security_group_id": "${oci_core_network_security_group.cluster.id}",
+        "protocol": "6",
+        "tcp_options": {
+          "destination_port_range": { "max": 10250, "min": 10250 }
+        }
+      },
+      "worker-from-bastion": {
+        "direction": "INGRESS",
+        "network_security_group_id": "${oci_core_network_security_group.worker.id}",
+        "protocol": "6",
+        "source": "${oci_core_network_security_group.bastion.id}",
+        "source_type": "NETWORK_SECURITY_GROUP",
+        "tcp_options": { "destination_port_range": { "max": 22, "min": 22 } }
+      },
+      "worker-from-cluster": {
+        "direction": "INGRESS",
+        "network_security_group_id": "${oci_core_network_security_group.worker.id}",
+        "protocol": "6",
+        "source": "${oci_core_network_security_group.cluster.id}",
+        "source_type": "NETWORK_SECURITY_GROUP",
+        "tcp_options": {
+          "destination_port_range": { "max": 10250, "min": 10250 }
+        }
+      },
+      "worker-from-worker": {
+        "direction": "INGRESS",
+        "network_security_group_id": "${oci_core_network_security_group.worker.id}",
+        "protocol": "all",
+        "source": "${oci_core_network_security_group.worker.id}",
+        "source_type": "NETWORK_SECURITY_GROUP"
+      },
+      "worker-icmp": {
+        "direction": "INGRESS",
+        "icmp_options": { "code": 4, "type": 3 },
+        "network_security_group_id": "${oci_core_network_security_group.worker.id}",
+        "protocol": "1",
+        "source": "0.0.0.0/0",
+        "source_type": "CIDR_BLOCK"
+      },
+      "worker-to-global": {
+        "destination": "0.0.0.0/0",
+        "destination_type": "CIDR_BLOCK",
+        "direction": "EGRESS",
+        "network_security_group_id": "${oci_core_network_security_group.worker.id}",
         "protocol": "all"
       }
     },
