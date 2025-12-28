@@ -69,6 +69,16 @@
           "destination_port_range": { "max": 12250, "min": 12250 }
         }
       },
+      "cluster-to-worker": {
+        "destination": "${oci_core_network_security_group.worker.id}",
+        "destination_type": "NETWORK_SECURITY_GROUP",
+        "direction": "EGRESS",
+        "network_security_group_id": "${oci_core_network_security_group.cluster.id}",
+        "protocol": "6",
+        "tcp_options": {
+          "destination_port_range": { "max": 10250, "min": 10250 }
+        }
+      },
       "worker-from-bastion": {
         "direction": "INGRESS",
         "network_security_group_id": "${oci_core_network_security_group.worker.id}",
