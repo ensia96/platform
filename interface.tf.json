@@ -4,7 +4,7 @@
       "dev": {
         "metadata": {
           "name": "limit-dev",
-          "namespace": "${kubernetes_namespace_v1.dev.metadata[0].name}"
+          "namespace": "${kubernetes_namespace_v1.dev.metadata.0.name}"
         },
         "spec": {
           "limit": [
@@ -19,7 +19,7 @@
       "main": {
         "metadata": {
           "name": "limit-main",
-          "namespace": "${kubernetes_namespace_v1.main.metadata[0].name}"
+          "namespace": "${kubernetes_namespace_v1.main.metadata.0.name}"
         },
         "spec": {
           "limit": [
@@ -34,7 +34,7 @@
       "system": {
         "metadata": {
           "name": "limit-system",
-          "namespace": "${kubernetes_namespace_v1.system.metadata[0].name}"
+          "namespace": "${kubernetes_namespace_v1.system.metadata.0.name}"
         },
         "spec": {
           "limit": [
@@ -61,7 +61,7 @@
       "dev": {
         "metadata": {
           "name": "quota-dev",
-          "namespace": "${kubernetes_namespace_v1.dev.metadata[0].name}"
+          "namespace": "${kubernetes_namespace_v1.dev.metadata.0.name}"
         },
         "spec": {
           "hard": {
@@ -75,7 +75,7 @@
       "main": {
         "metadata": {
           "name": "quota-main",
-          "namespace": "${kubernetes_namespace_v1.main.metadata[0].name}"
+          "namespace": "${kubernetes_namespace_v1.main.metadata.0.name}"
         },
         "spec": {
           "hard": {
@@ -89,7 +89,7 @@
       "system": {
         "metadata": {
           "name": "quota-system",
-          "namespace": "${kubernetes_namespace_v1.system.metadata[0].name}"
+          "namespace": "${kubernetes_namespace_v1.system.metadata.0.name}"
         },
         "spec": {
           "hard": {
