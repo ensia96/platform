@@ -48,6 +48,14 @@
         "tcp_options": {
           "destination_port_range": { "max": 6443, "min": 6443 }
         }
+      },
+      "worker-from-bastion": {
+        "direction": "INGRESS",
+        "network_security_group_id": "${oci_core_network_security_group.worker.id}",
+        "protocol": "6",
+        "source": "${oci_core_network_security_group.bastion.id}",
+        "source_type": "NETWORK_SECURITY_GROUP",
+        "tcp_options": { "destination_port_range": { "max": 22, "min": 22 } }
       }
     },
     "oci_core_public_ip": {
