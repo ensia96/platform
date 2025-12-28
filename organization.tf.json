@@ -116,7 +116,7 @@
       "instance-cpu": {
         "compartment_id": "${oci_identity_compartment.platform.id}",
         "destinations": ["${oci_ons_notification_topic.main.id}"],
-        "display_name": "${local.project}-alarm-cpu",
+        "display_name": "${local.project}-alarm-instance-cpu",
         "is_enabled": true,
         "metric_compartment_id": "${oci_identity_compartment.platform.id}",
         "namespace": "oci_computeagent",
