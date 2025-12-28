@@ -52,9 +52,11 @@
       "service": {
         "annotations": {
           "service.beta.kubernetes.io/oci-load-balancer-id": "${oci_load_balancer_load_balancer.main.id}",
-          "service.beta.kubernetes.io/oci-load-balancer-subnet1": "${oci_core_subnet.public.id}",
           "service.beta.kubernetes.io/oci-load-balancer-internal": "false",
-          "service.beta.kubernetes.io/oci-load-balancer-shape": "flexible"
+          "service.beta.kubernetes.io/oci-load-balancer-shape": "flexible",
+          "service.beta.kubernetes.io/oci-load-balancer-shape-flex-max": 10,
+          "service.beta.kubernetes.io/oci-load-balancer-shape-flex-min": 10,
+          "service.beta.kubernetes.io/oci-load-balancer-subnet1": "${oci_core_subnet.public.id}"
         }
       }
     },
