@@ -62,6 +62,12 @@
         "user_id": "${oci_identity_user.manager.id}"
       }
     },
+    "oci_logging_log_group": {
+      "main": {
+        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "display_name": "${local.project}-log-group-main"
+      }
+    },
     "tailscale_acl": {
       "main": { "acl": "${jsonencode(local.tailscale-acl)}" }
     },
