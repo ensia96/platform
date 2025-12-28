@@ -6,8 +6,7 @@
         "name": "prometheus",
         "namespace": "${kubernetes_namespace_v1.system.metadata.0.name}",
         "repository": "https://prometheus-community.github.io/helm-charts",
-        "values": ["${jsonencode(local.prometheus-values)}"],
-        "version": "68.2.1"
+        "values": ["${jsonencode(local.prometheus-values)}"]
       },
       "traefik": {
         "chart": "traefik",
