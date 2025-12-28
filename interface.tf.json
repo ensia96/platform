@@ -1,48 +1,4 @@
 {
-  "kubernetes_resource_quota_v1": {
-    "dev": {
-      "metadata": {
-        "name": "quota-dev",
-        "namespace": "${kubernetes_namespace_v1.dev.metadata[0].name}"
-      },
-      "spec": {
-        "hard": {
-          "limits.cpu": "1000m",
-          "limits.memory": "2Gi",
-          "requests.cpu": "600m",
-          "requests.memory": "1.5Gi"
-        }
-      }
-    },
-    "main": {
-      "metadata": {
-        "name": "quota-main",
-        "namespace": "${kubernetes_namespace_v1.main.metadata[0].name}"
-      },
-      "spec": {
-        "hard": {
-          "limits.cpu": "8000m",
-          "limits.memory": "20Gi",
-          "requests.cpu": "5000m",
-          "requests.memory": "13Gi"
-        }
-      }
-    },
-    "system": {
-      "metadata": {
-        "name": "quota-system",
-        "namespace": "${kubernetes_namespace_v1.system.metadata[0].name}"
-      },
-      "spec": {
-        "hard": {
-          "limits.cpu": "3000m",
-          "limits.memory": "8Gi",
-          "requests.cpu": "1500m",
-          "requests.memory": "5Gi"
-        }
-      }
-    }
-  },
   "resource": {
     "kubernetes_namespace_v1": {
       "dev": { "metadata": { "name": "dev" } },
@@ -53,6 +9,50 @@
       "dev": { "metadata": { "name": "priority-dev" }, "value": 1 },
       "main": { "metadata": { "name": "priority-main" }, "value": 10 },
       "system": { "metadata": { "name": "priority-system" }, "value": 100 }
+    },
+    "kubernetes_resource_quota_v1": {
+      "dev": {
+        "metadata": {
+          "name": "quota-dev",
+          "namespace": "${kubernetes_namespace_v1.dev.metadata[0].name}"
+        },
+        "spec": {
+          "hard": {
+            "limits.cpu": "1000m",
+            "limits.memory": "2Gi",
+            "requests.cpu": "600m",
+            "requests.memory": "1.5Gi"
+          }
+        }
+      },
+      "main": {
+        "metadata": {
+          "name": "quota-main",
+          "namespace": "${kubernetes_namespace_v1.main.metadata[0].name}"
+        },
+        "spec": {
+          "hard": {
+            "limits.cpu": "8000m",
+            "limits.memory": "20Gi",
+            "requests.cpu": "5000m",
+            "requests.memory": "13Gi"
+          }
+        }
+      },
+      "system": {
+        "metadata": {
+          "name": "quota-system",
+          "namespace": "${kubernetes_namespace_v1.system.metadata[0].name}"
+        },
+        "spec": {
+          "hard": {
+            "limits.cpu": "3000m",
+            "limits.memory": "8Gi",
+            "requests.cpu": "1500m",
+            "requests.memory": "5Gi"
+          }
+        }
+      }
     }
   }
 }
