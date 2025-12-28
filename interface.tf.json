@@ -14,30 +14,7 @@
         "name": "traefik",
         "namespace": "${kubernetes_namespace_v1.system.metadata.0.name}",
         "repository": "https://traefik.github.io/charts",
-        "set": [
-          { "name": "deployment.replicas", "value": 2 },
-          { "name": "priorityClassName", "value": "system-priority" },
-          {
-            "name": "deployment.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.0.weight",
-            "value": 100
-          },
-          {
-            "name": "deployment.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.0.podAffinityTerm.labelSelector.matchExpressions.0.key",
-            "value": "app.kubernetes.io/name"
-          },
-          {
-            "name": "deployment.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.0.podAffinityTerm.labelSelector.matchExpressions.0.operator",
-            "value": "In"
-          },
-          {
-            "name": "deployment.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.0.podAffinityTerm.labelSelector.matchExpressions.0.values.0",
-            "value": "traefik"
-          },
-          {
-            "name": "deployment.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution.0.podAffinityTerm.topologyKey",
-            "value": "kubernetes.io/hostname"
-          }
-        ],
+        "set": "${local.traefik-set}",
         "values": ["${jsonencode(local.traefik-values)}"],
         "version": "34.0.0"
       }
