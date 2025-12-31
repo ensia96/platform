@@ -5,9 +5,9 @@ inputs:
     required: true
   oci_private_key_path:
     required: true
-  tailscale_oauth_client_id:
+  tailscale_client_id:
     required: true
-  tailscale_oauth_client_secret:
+  tailscale_client_secret:
     required: true
 
 runs:
@@ -25,8 +25,8 @@ runs:
     - name: Connect to Tailscale
       uses: tailscale/github-action@v4
       with:
-        oauth-client-id: ${{ inputs.tailscale_oauth_client_id }}
-        oauth-secret: ${{ inputs.tailscale_oauth_client_secret }}
+        oauth-client-id: ${{ inputs.tailscale_client_id }}
+        oauth-secret: ${{ inputs.tailscale_client_secret }}
         tags: tag:bastion
 
     - name: Terraform Init
