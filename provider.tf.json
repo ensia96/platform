@@ -13,12 +13,8 @@
     },
     "kubernetes": {
       "cluster_ca_certificate": "${local.cluster-certificate}",
-      "exec": {
-        "api_version": "${local.cluster-api-version}",
-        "args": "${local.cluster-command-arguments}",
-        "command": "oci"
-      },
-      "host": "${yamldecode(data.oci_containerengine_cluster_kube_config.main.content).clusters.0.cluster.server}"
+      "host": "${yamldecode(data.oci_containerengine_cluster_kube_config.main.content).clusters.0.cluster.server}",
+      "token": "${var.cluster_token}"
     },
     "oci": {},
     "tailscale": {}
