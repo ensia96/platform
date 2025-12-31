@@ -4,6 +4,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   TAILSCALE_OAUTH_CLIENT_ID: ${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}
   TAILSCALE_OAUTH_CLIENT_SECRET: ${{ secrets.TAILSCALE_OAUTH_CLIENT_SECRET }}
+  TF_VAR_cluster_token: ${{ secrets.CLUSTER_TOKEN }}
   TF_VAR_email: ${{ secrets.EMAIL }}
   TF_VAR_fingerprint: ${{ secrets.FINGERPRINT }}
   TF_VAR_private_key_path: ${{ secrets.PRIVATE_KEY_PATH }}
