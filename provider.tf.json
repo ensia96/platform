@@ -2,7 +2,7 @@
   "provider": {
     "helm": {
       "kubernetes": {
-        "cluster_ca_certificate": "${local.cluster-certificate}",
+        "cluster_ca_certificate": "${base64decode(yamldecode(data.oci_containerengine_cluster_kube_config.main.content).clusters.0.cluster[\"certificate-authority-data\"])}",
         "host": "${yamldecode(data.oci_containerengine_cluster_kube_config.main.content).clusters.0.cluster.server}",
 
         "token": "${var.cluster_token}"
