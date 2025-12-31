@@ -1,6 +1,5 @@
 {
   "locals": {
-    "cluster-certificate": "${base64decode(yamldecode(data.oci_containerengine_cluster_kube_config.main.content).clusters.0.cluster[\"certificate-authority-data\"])}",
     "controller-values": {
       "deployment": {
         "podAntiAffinity": {
