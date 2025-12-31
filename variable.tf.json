@@ -1,5 +1,6 @@
 {
   "variable": {
+    "cluster_token": { "type": "string" },
     "email": { "type": "string" },
     "tenancy_ocid": { "type": "string" }
   }

@@ -1,14 +1,5 @@
 {
   "locals": {
-    "cluster-api-version": "client.authentication.k8s.io/v1beta1",
-    "cluster-certificate": "${base64decode(yamldecode(data.oci_containerengine_cluster_kube_config.main.content).clusters.0.cluster[\"certificate-authority-data\"])}",
-    "cluster-command-arguments": [
-      "ce",
-      "cluster",
-      "generate-token",
-      "--cluster-id",
-      "${oci_containerengine_cluster.main.id}"
-    ],
     "controller-values": {
       "deployment": {
         "podAntiAffinity": {
