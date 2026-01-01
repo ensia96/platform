@@ -10,7 +10,8 @@
     "oci_artifacts_container_repository": {
       "application": {
         "compartment_id": "${oci_identity_compartment.platform.id}",
-        "display_name": "${local.project}-repository-application"
+        "display_name": "${local.project}-repository-application",
+        "is_public": true
       }
     }
   }
