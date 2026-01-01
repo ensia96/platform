@@ -19,8 +19,6 @@ on:
   push:
     branches:
       - main
-  repository_dispatch:
-    types: [deploy]
 
 permissions:
   contents: read
