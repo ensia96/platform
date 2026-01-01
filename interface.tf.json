@@ -41,9 +41,9 @@
         "spec": {
           "limit": [
             {
-              "default": { "cpu": "800m", "memory": "3Gi" },
-              "default_request": { "cpu": "250m", "memory": "1.5Gi" },
-              "max": { "cpu": "2000m", "memory": "6Gi" },
+              "default": { "cpu": "300m", "memory": "1Gi" },
+              "default_request": { "cpu": "200m", "memory": "512Mi" },
+              "max": { "cpu": "800m", "memory": "2Gi" },
               "type": "Container"
             }
           ]
