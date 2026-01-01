@@ -98,9 +98,9 @@
         "spec": {
           "hard": {
             "limits.cpu": "4000m",
-            "limits.memory": "14Gi",
-            "requests.cpu": "1600m",
-            "requests.memory": "8Gi"
+            "limits.memory": "15Gi",
+            "requests.cpu": "2000m",
+            "requests.memory": "5Gi"
           }
         }
       },
