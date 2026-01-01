@@ -25,10 +25,9 @@
         "spec": {
           "limit": [
             {
-              "default": { "cpu": "200m", "memory": "512Mi" },
-              "default_request": { "cpu": "50m", "memory": "128Mi" },
-              "max": { "cpu": "300m", "memory": "512Mi" },
-              "min": { "cpu": "10m", "memory": "64Mi" },
+              "default": { "cpu": "300m", "memory": "512Mi" },
+              "default_request": { "cpu": "100m", "memory": "512Mi" },
+              "max": { "cpu": "600m", "memory": "2Gi" },
               "type": "Container"
             }
           ]
@@ -42,9 +41,9 @@
         "spec": {
           "limit": [
             {
-              "default": { "cpu": "800m", "memory": "3Gi" },
-              "default_request": { "cpu": "250m", "memory": "1.5Gi" },
-              "max": { "cpu": "2000m", "memory": "6Gi" },
+              "default": { "cpu": "300m", "memory": "1Gi" },
+              "default_request": { "cpu": "200m", "memory": "512Mi" },
+              "max": { "cpu": "800m", "memory": "2Gi" },
               "type": "Container"
             }
           ]
@@ -84,10 +83,10 @@
         },
         "spec": {
           "hard": {
-            "limits.cpu": "1000m",
-            "limits.memory": "4Gi",
+            "limits.cpu": "700m",
+            "limits.memory": "3Gi",
             "requests.cpu": "400m",
-            "requests.memory": "2Gi"
+            "requests.memory": "1.5Gi"
           }
         }
       },
@@ -99,9 +98,9 @@
         "spec": {
           "hard": {
             "limits.cpu": "4000m",
-            "limits.memory": "14Gi",
-            "requests.cpu": "1600m",
-            "requests.memory": "8Gi"
+            "limits.memory": "15Gi",
+            "requests.cpu": "2000m",
+            "requests.memory": "5Gi"
           }
         }
       },
