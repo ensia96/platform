@@ -16,6 +16,39 @@
         "values": ["${jsonencode(local.monitor-values)}"]
       }
     },
+    "kubernetes_deployment_v1": {
+      "application-dev": {
+        "metadata": {
+          "labels": { "app": "application-dev" },
+          "name": "application-dev",
+          "namespace": "${kubernetes_namespace_v1.dev.metadata.0.name}"
+        },
+        "spec": {
+          "replicas": 1,
+          "selector": { "match_labels": { "app": "application-dev" } },
+          "strategy": {
+            "rolling_update": { "max_surge": "25%", "max_unavailable": 0 },
+            "type": "RollingUpdate"
+          },
+          "template": {
+            "metadata": { "labels": { "app": "application-dev" } },
+            "spec": {
+              "container": [
+                {
+                  "image": "${var.region}.ocir.io/${oci_artifacts_container_repository.application.namespace}/${oci_artifacts_container_repository.application.display_name}:${var.application_dev_tag}",
+                  "name": "application-dev",
+                  "resources": {
+                    "limits": { "cpu": "300m", "memory": "1Gi" },
+                    "requests": { "cpu": "100m", "memory": "512Mi" }
+                  }
+                }
+              ],
+              "priority_class_name": "priority-dev"
+            }
+          }
+        }
+      }
+    },
     "kubernetes_limit_range_v1": {
       "dev": {
         "metadata": {

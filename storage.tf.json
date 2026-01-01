@@ -1,16 +1,17 @@
 {
   "resource": {
+    "oci_artifacts_container_repository": {
+      "application": {
+        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "display_name": "${local.project}-repository-application",
+        "is_public": true
+      }
+    },
     "oci_objectstorage_bucket": {
       "state": {
         "compartment_id": "${var.tenancy_ocid}",
         "name": "${local.project}-state",
         "namespace": "cnm7patunz1z"
-      }
-    },
-    "oci_artifacts_container_repository": {
-      "application": {
-        "compartment_id": "${oci_identity_compartment.platform.id}",
-        "display_name": "${local.project}-repository-application"
       }
     }
   }

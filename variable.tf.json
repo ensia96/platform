@@ -1,7 +1,9 @@
 {
   "variable": {
+    "application_dev_tag": { "type": "string" },
     "cluster_token": { "type": "string" },
     "email": { "type": "string" },
+    "region": { "type": "string" },
     "tenancy_ocid": { "type": "string" }
   }
 }
