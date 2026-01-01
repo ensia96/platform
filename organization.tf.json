@@ -18,6 +18,12 @@
         "targets": ["${var.tenancy_ocid}"]
       }
     },
+    "oci_identity_auth_token": {
+      "application": {
+        "user_id": "${oci_identity_user.manager.id}",
+        "description": "${local.project}-auth-token-application"
+      }
+    },
     "oci_identity_compartment": {
       "platform": {
         "compartment_id": "${var.tenancy_ocid}",
