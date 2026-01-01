@@ -25,10 +25,9 @@
         "spec": {
           "limit": [
             {
-              "default": { "cpu": "200m", "memory": "512Mi" },
-              "default_request": { "cpu": "50m", "memory": "128Mi" },
-              "max": { "cpu": "300m", "memory": "512Mi" },
-              "min": { "cpu": "10m", "memory": "64Mi" },
+              "default": { "cpu": "300m", "memory": "512Mi" },
+              "default_request": { "cpu": "100m", "memory": "512Mi" },
+              "max": { "cpu": "600m", "memory": "2Gi" },
               "type": "Container"
             }
           ]
