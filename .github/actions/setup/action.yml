@@ -16,6 +16,20 @@ runs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
 
+    - name: Get Latest Commit Hash
+      shell: bash
+      run: |
+        APPLICATION="https://x-access-token:${{ env.GITHUB_TOKEN }}@github.com/${{ github.repository_owner }}/application.git"
+
+        APPLICATION_DEV_TAG=$(git ls-remote $APPLICATION refs/heads/dev | cut -f1)
+
+        if [ -z "$APPLICATION_DEV_TAG" ]; then
+          echo "Error: Could not fetch commit hash for dev branch"
+          exit 1
+        fi
+
+        echo "TF_VAR_application_dev_tag=$APPLICATION_DEV_TAG" >> $GITHUB_ENV
+
     - name: Create OCI Private Key File
       shell: bash
       run: |
