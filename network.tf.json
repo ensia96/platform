@@ -1,5 +1,11 @@
 {
   "resource": {
+    "cloudflare_zone": {
+      "main": {
+        "account": { "id": "${data.cloudflare_account.main.id}" },
+        "name": "${local.domain}"
+      }
+    },
     "oci_core_internet_gateway": {
       "main": {
         "compartment_id": "${oci_identity_compartment.main.id}",
