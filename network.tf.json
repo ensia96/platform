@@ -282,6 +282,14 @@
         "dns_label": "${local.project}"
       }
     },
+    "oci_load_balancer_backend_set": {
+      "main": {
+        "health_checker": { "protocol": "TCP" },
+        "load_balancer_id": "${oci_load_balancer_load_balancer.main.id}",
+        "name": "${local.project}-backend-set",
+        "policy": "ROUND_ROBIN"
+      }
+    },
     "oci_load_balancer_load_balancer": {
       "main": {
         "compartment_id": "${oci_identity_compartment.main.id}",
