@@ -51,6 +51,7 @@
         }
       }
     },
+    "domain": "mangocraft.work",
     "log-retention-duration": 30,
     "monitor-values": {
       "alertmanager": { "enabled": false },
