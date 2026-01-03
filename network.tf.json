@@ -170,6 +170,16 @@
           "destination_port_range": { "max": 10250, "min": 10250 }
         }
       },
+      "worker-from-load-balancer": {
+        "direction": "INGRESS",
+        "network_security_group_id": "${oci_core_network_security_group.worker.id}",
+        "protocol": "6",
+        "source": "${oci_core_network_security_group.load-balancer.id}",
+        "source_type": "NETWORK_SECURITY_GROUP",
+        "tcp_options": {
+          "destination_port_range": { "max": 32767, "min": 30000 }
+        }
+      },
       "worker-from-worker": {
         "direction": "INGRESS",
         "network_security_group_id": "${oci_core_network_security_group.worker.id}",
