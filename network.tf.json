@@ -16,6 +16,11 @@
         "setting_id": "security_level",
         "value": "medium",
         "zone_id": "${cloudflare_zone.main.id}"
+      },
+      "ssl-mode": {
+        "setting_id": "ssl",
+        "value": "full",
+        "zone_id": "${cloudflare_zone.main.id}"
       }
     },
     "oci_core_internet_gateway": {
