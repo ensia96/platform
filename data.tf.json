@@ -1,5 +1,6 @@
 {
   "data": {
+    "cloudflare_zone": { "main": { "filter": { "name": "mangocraft.work" } } },
     "oci_containerengine_cluster_kube_config": {
       "main": { "cluster_id": "${oci_containerengine_cluster.main.id}" }
     },
