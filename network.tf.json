@@ -63,6 +63,11 @@
         "display_name": "${local.project}-network-security-group-cluster",
         "vcn_id": "${oci_core_vcn.main.id}"
       },
+      "load-balancer": {
+        "compartment_id": "${oci_identity_compartment.main.id}",
+        "display_name": "${local.project}-network-security-group-lb",
+        "vcn_id": "${oci_core_vcn.main.id}"
+      },
       "worker": {
         "compartment_id": "${oci_identity_compartment.main.id}",
         "display_name": "${local.project}-network-security-group-worker",
@@ -124,6 +129,29 @@
           "destination_port_range": { "max": 10250, "min": 10250 }
         }
       },
+      "load-balancer-from-http": {
+        "direction": "INGRESS",
+        "network_security_group_id": "${oci_core_network_security_group.load-balancer.id}",
+        "protocol": "6",
+        "source": "0.0.0.0/0",
+        "source_type": "CIDR_BLOCK",
+        "tcp_options": { "destination_port_range": { "max": 80, "min": 80 } }
+      },
+      "load-balancer-from-https": {
+        "direction": "INGRESS",
+        "network_security_group_id": "${oci_core_network_security_group.load-balancer.id}",
+        "protocol": "6",
+        "source": "0.0.0.0/0",
+        "source_type": "CIDR_BLOCK",
+        "tcp_options": { "destination_port_range": { "max": 443, "min": 443 } }
+      },
+      "load-balancer-to-global": {
+        "destination": "0.0.0.0/0",
+        "destination_type": "CIDR_BLOCK",
+        "direction": "EGRESS",
+        "network_security_group_id": "${oci_core_network_security_group.load-balancer.id}",
+        "protocol": "all"
+      },
       "worker-from-bastion": {
         "direction": "INGRESS",
         "network_security_group_id": "${oci_core_network_security_group.worker.id}",
@@ -140,6 +168,16 @@
         "source_type": "NETWORK_SECURITY_GROUP",
         "tcp_options": {
           "destination_port_range": { "max": 10250, "min": 10250 }
+        }
+      },
+      "worker-from-load-balancer": {
+        "direction": "INGRESS",
+        "network_security_group_id": "${oci_core_network_security_group.worker.id}",
+        "protocol": "6",
+        "source": "${oci_core_network_security_group.load-balancer.id}",
+        "source_type": "NETWORK_SECURITY_GROUP",
+        "tcp_options": {
+          "destination_port_range": { "max": 32767, "min": 30000 }
         }
       },
       "worker-from-worker": {
@@ -248,6 +286,9 @@
       "main": {
         "compartment_id": "${oci_identity_compartment.main.id}",
         "display_name": "${local.project}-load-balancer",
+        "network_security_group_ids": [
+          "${oci_core_network_security_group.load-balancer.id}"
+        ],
         "reserved_ips": [{ "id": "${oci_core_public_ip.main.id}" }],
         "shape": "flexible",
         "shape_details": {
