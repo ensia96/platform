@@ -1,6 +1,10 @@
 {
   "locals": {
     "controller-values": {
+      "additionalArguments": [
+        "--entryPoints.websecure.forwardedHeaders.trustedIPs=${join(\",\", data.cloudflare_ip_ranges.main.ipv4_cidrs)}",
+        "--entryPoints.websecure.proxyProtocol.trustedIPs=${join(\",\", data.cloudflare_ip_ranges.main.ipv4_cidrs)}"
+      ],
       "deployment": {
         "podAntiAffinity": {
           "preferredDuringSchedulingIgnoredDuringExecution": [
