@@ -59,7 +59,23 @@
     "log-retention-duration": 30,
     "monitor-values": {
       "alertmanager": { "enabled": false },
-      "grafana": { "enabled": false },
+      "grafana": {
+        "additionalDataSources": [
+          {
+            "access": "proxy",
+            "isDefault": true,
+            "name": "Prometheus",
+            "type": "prometheus",
+            "url": "http://monitor-kube-prometheus-stack-prometheus.system:9090"
+          }
+        ],
+        "adminPassword": "${var.monitor_password}",
+        "persistence": { "enabled": false },
+        "resources": {
+          "limits": { "cpu": "150m", "memory": "512Mi" },
+          "requests": { "cpu": "100m", "memory": "256Mi" }
+        }
+      },
       "kube-state-metrics": {
         "resources": {
           "limits": { "cpu": "100m", "memory": "128Mi" },
