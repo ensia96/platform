@@ -292,7 +292,7 @@
     },
     "oci_load_balancer_listener": {
       "http": {
-        "default_backend_set_name": "${oci_load_balancer_backend_set.dummy.name}",
+        "default_backend_set_name": "${oci_load_balancer_backend_set.main.name}",
         "load_balancer_id": "${oci_load_balancer_load_balancer.main.id}",
         "name": "${local.project}-listener-http",
         "port": 80,
