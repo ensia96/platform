@@ -259,7 +259,8 @@
           "maximum_bandwidth_in_mbps": 10,
           "minimum_bandwidth_in_mbps": 10
         },
-        "subnet_ids": ["${oci_core_subnet.public.id}"]
+        "subnet_ids": ["${oci_core_subnet.public.id}"],
+        "nsg_ids": ["${oci_core_network_security_group.load-balancer.id}"]
       }
     }
   }
