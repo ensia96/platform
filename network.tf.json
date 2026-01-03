@@ -282,6 +282,23 @@
         "dns_label": "${local.project}"
       }
     },
+    "oci_load_balancer_backend_set": {
+      "main": {
+        "health_checker": { "protocol": "TCP" },
+        "load_balancer_id": "${oci_load_balancer_load_balancer.main.id}",
+        "name": "${local.project}-backend-set",
+        "policy": "ROUND_ROBIN"
+      }
+    },
+    "oci_load_balancer_listener": {
+      "http": {
+        "default_backend_set_name": "${oci_load_balancer_backend_set.main.name}",
+        "load_balancer_id": "${oci_load_balancer_load_balancer.main.id}",
+        "name": "${local.project}-listener-http",
+        "port": 80,
+        "protocol": "HTTP"
+      }
+    },
     "oci_load_balancer_load_balancer": {
       "main": {
         "compartment_id": "${oci_identity_compartment.main.id}",
