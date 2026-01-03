@@ -3,7 +3,6 @@
     "cloudflare_account": {
       "main": { "filter": { "name": "email", "values": "${var.email}" } }
     },
-    "cloudflare_zone": { "main": { "filter": { "name": "${local.domain}" } } },
     "oci_containerengine_cluster_kube_config": {
       "main": { "cluster_id": "${oci_containerengine_cluster.main.id}" }
     },
