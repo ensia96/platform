@@ -6,6 +6,13 @@
         "name": "${local.domain}"
       }
     },
+    "cloudflare_zone_setting": {
+      "secure-mode": {
+        "setting_id": "always_use_https",
+        "value": "on",
+        "zone_id": "${cloudflare_zone.main.id}"
+      }
+    },
     "oci_core_internet_gateway": {
       "main": {
         "compartment_id": "${oci_identity_compartment.main.id}",
