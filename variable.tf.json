@@ -3,6 +3,7 @@
     "application_dev_tag": { "type": "string" },
     "cluster_token": { "type": "string" },
     "email": { "type": "string" },
+    "monitor_password": { "sensitive": true, "type": "string" },
     "region": { "type": "string" },
     "tenancy_ocid": { "type": "string" }
   }
