@@ -126,16 +126,6 @@
         "namespace": "oci_computeagent",
         "query": "MemoryUtilization[1m].max() > 70",
         "severity": "CRITICAL"
-      },
-      "load-balancer-health": {
-        "compartment_id": "${oci_identity_compartment.main.id}",
-        "destinations": ["${oci_ons_notification_topic.main.id}"],
-        "display_name": "${local.project}-alarm-load-balancer-health",
-        "is_enabled": true,
-        "metric_compartment_id": "${oci_identity_compartment.main.id}",
-        "namespace": "oci_lbaas",
-        "query": "UnHealthyBackendServerCount[1m]{resourceId = \"${oci_load_balancer_load_balancer.main.id}\"}.max() > 0",
-        "severity": "CRITICAL"
       }
     },
     "oci_ons_notification_topic": {
