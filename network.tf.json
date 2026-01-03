@@ -129,6 +129,14 @@
           "destination_port_range": { "max": 10250, "min": 10250 }
         }
       },
+      "load-balancer-from-http": {
+        "direction": "INGRESS",
+        "network_security_group_id": "${oci_core_network_security_group.load-balancer.id}",
+        "protocol": "6",
+        "source": "0.0.0.0/0",
+        "source_type": "CIDR_BLOCK",
+        "tcp_options": { "destination_port_range": { "max": 80, "min": 80 } }
+      },
       "worker-from-bastion": {
         "direction": "INGRESS",
         "network_security_group_id": "${oci_core_network_security_group.worker.id}",
