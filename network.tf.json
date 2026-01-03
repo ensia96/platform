@@ -145,6 +145,13 @@
         "source_type": "CIDR_BLOCK",
         "tcp_options": { "destination_port_range": { "max": 443, "min": 443 } }
       },
+      "load-balancer-to-global": {
+        "destination": "0.0.0.0/0",
+        "destination_type": "CIDR_BLOCK",
+        "direction": "EGRESS",
+        "network_security_group_id": "${oci_core_network_security_group.load-balancer.id}",
+        "protocol": "all"
+      },
       "worker-from-bastion": {
         "direction": "INGRESS",
         "network_security_group_id": "${oci_core_network_security_group.worker.id}",
