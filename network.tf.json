@@ -1,5 +1,33 @@
 {
   "resource": {
+    "cloudflare_zone": {
+      "main": {
+        "account": { "id": "${data.cloudflare_account.main.id}" },
+        "name": "${local.domain}"
+      }
+    },
+    "cloudflare_zone_setting": {
+      "secure-mode": {
+        "setting_id": "always_use_https",
+        "value": "on",
+        "zone_id": "${cloudflare_zone.main.id}"
+      },
+      "security-level": {
+        "setting_id": "security_level",
+        "value": "medium",
+        "zone_id": "${cloudflare_zone.main.id}"
+      },
+      "ssl-mode": {
+        "setting_id": "ssl",
+        "value": "full",
+        "zone_id": "${cloudflare_zone.main.id}"
+      },
+      "tls-version": {
+        "setting_id": "min_tls_version",
+        "value": "1.2",
+        "zone_id": "${cloudflare_zone.main.id}"
+      }
+    },
     "oci_core_internet_gateway": {
       "main": {
         "compartment_id": "${oci_identity_compartment.main.id}",
