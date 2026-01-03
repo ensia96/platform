@@ -51,14 +51,27 @@
         }
       }
     },
+    "domain": "mangocraft.work",
     "log-retention-duration": 30,
     "monitor-values": {
       "alertmanager": { "enabled": false },
       "grafana": { "enabled": false },
+      "kube-state-metrics": {
+        "resources": {
+          "limits": { "cpu": "100m", "memory": "128Mi" },
+          "requests": { "cpu": "50m", "memory": "64Mi" }
+        }
+      },
       "kubeControllerManager": { "enabled": false },
       "kubeProxy": { "enabled": false },
       "kubeScheduler": { "enabled": false },
       "kubeStateMetrics": { "enabled": true },
+      "nodeExporter": {
+        "resources": {
+          "limits": { "cpu": "50m", "memory": "128Mi" },
+          "requests": { "cpu": "20m", "memory": "64Mi" }
+        }
+      },
       "prometheus": {
         "prometheusSpec": {
           "configReloaderResources": {
@@ -78,18 +91,6 @@
         "resources": {
           "limits": { "cpu": "100m", "memory": "256Mi" },
           "requests": { "cpu": "50m", "memory": "128Mi" }
-        }
-      },
-      "nodeExporter": {
-        "resources": {
-          "limits": { "cpu": "50m", "memory": "128Mi" },
-          "requests": { "cpu": "20m", "memory": "64Mi" }
-        }
-      },
-      "kube-state-metrics": {
-        "resources": {
-          "limits": { "cpu": "100m", "memory": "128Mi" },
-          "requests": { "cpu": "50m", "memory": "64Mi" }
         }
       }
     },

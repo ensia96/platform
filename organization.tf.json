@@ -25,7 +25,7 @@
       }
     },
     "oci_identity_compartment": {
-      "platform": {
+      "main": {
         "compartment_id": "${var.tenancy_ocid}",
         "description": "${local.project}",
         "name": "${local.project}"
@@ -44,7 +44,7 @@
         "description": "manage resources",
         "name": "${local.project}-identity-policy-cluster",
         "statements": [
-          "Allow service OKE to manage all-resources in compartment id ${oci_identity_compartment.platform.id}"
+          "Allow service OKE to manage all-resources in compartment id ${oci_identity_compartment.main.id}"
         ]
       },
       "manager": {
@@ -130,47 +130,47 @@
     },
     "oci_logging_log_group": {
       "main": {
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "display_name": "${local.project}-log-group-main"
       }
     },
     "oci_monitoring_alarm": {
       "instance-cpu": {
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "destinations": ["${oci_ons_notification_topic.main.id}"],
         "display_name": "${local.project}-alarm-instance-cpu",
         "is_enabled": true,
-        "metric_compartment_id": "${oci_identity_compartment.platform.id}",
+        "metric_compartment_id": "${oci_identity_compartment.main.id}",
         "namespace": "oci_computeagent",
         "query": "cpuutilization[1m].max() > 40",
         "severity": "CRITICAL"
       },
       "instance-memory": {
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "destinations": ["${oci_ons_notification_topic.main.id}"],
         "display_name": "${local.project}-alarm-instance-memory",
         "is_enabled": true,
-        "metric_compartment_id": "${oci_identity_compartment.platform.id}",
+        "metric_compartment_id": "${oci_identity_compartment.main.id}",
         "namespace": "oci_computeagent",
         "query": "MemoryUtilization[1m].max() > 70",
         "severity": "CRITICAL"
       },
       "load-balancer-bandwidth": {
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "destinations": ["${oci_ons_notification_topic.main.id}"],
         "display_name": "${local.project}-alarm-load-balancer-bandwidth",
         "is_enabled": true,
-        "metric_compartment_id": "${oci_identity_compartment.platform.id}",
+        "metric_compartment_id": "${oci_identity_compartment.main.id}",
         "namespace": "oci_lbaas",
         "query": "InboundBandwidthUsage[1m]{resourceId = \"${oci_load_balancer_load_balancer.main.id}\"}.max() > 8",
         "severity": "WARNING"
       },
       "load-balancer-health": {
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "destinations": ["${oci_ons_notification_topic.main.id}"],
         "display_name": "${local.project}-alarm-load-balancer-health",
         "is_enabled": true,
-        "metric_compartment_id": "${oci_identity_compartment.platform.id}",
+        "metric_compartment_id": "${oci_identity_compartment.main.id}",
         "namespace": "oci_lbaas",
         "query": "UnHealthyBackendServerCount[1m]{resourceId = \"${oci_load_balancer_load_balancer.main.id}\"}.max() > 0",
         "severity": "CRITICAL"
@@ -178,13 +178,13 @@
     },
     "oci_ons_notification_topic": {
       "main": {
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "name": "${local.project}-notification-topic-main"
       }
     },
     "oci_ons_subscription": {
       "email": {
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "endpoint": "${var.email}",
         "protocol": "EMAIL",
         "topic_id": "${oci_ons_notification_topic.main.id}"

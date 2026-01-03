@@ -1,10 +1,10 @@
 {
   "provider": {
+    "cloudflare": {},
     "helm": {
       "kubernetes": {
         "cluster_ca_certificate": "${base64decode(yamldecode(data.oci_containerengine_cluster_kube_config.main.content).clusters.0.cluster[\"certificate-authority-data\"])}",
         "host": "${yamldecode(data.oci_containerengine_cluster_kube_config.main.content).clusters.0.cluster.server}",
-
         "token": "${var.cluster_token}"
       }
     },
@@ -25,6 +25,7 @@
       }
     },
     "required_providers": {
+      "cloudflare": { "source": "cloudflare/cloudflare" },
       "helm": { "source": "hashicorp/helm" },
       "kubernetes": { "source": "hashicorp/kubernetes" },
       "oci": { "source": "oracle/oci" },

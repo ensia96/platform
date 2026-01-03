@@ -2,31 +2,31 @@
   "resource": {
     "oci_core_internet_gateway": {
       "main": {
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "display_name": "${local.project}-internet-gateway",
         "vcn_id": "${oci_core_vcn.main.id}"
       }
     },
     "oci_core_nat_gateway": {
       "main": {
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "display_name": "${local.project}-nat-gateway",
         "vcn_id": "${oci_core_vcn.main.id}"
       }
     },
     "oci_core_network_security_group": {
       "bastion": {
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "display_name": "${local.project}-network-security-group-bastion",
         "vcn_id": "${oci_core_vcn.main.id}"
       },
       "cluster": {
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "display_name": "${local.project}-network-security-group-cluster",
         "vcn_id": "${oci_core_vcn.main.id}"
       },
       "worker": {
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "display_name": "${local.project}-network-security-group-worker",
         "vcn_id": "${oci_core_vcn.main.id}"
       }
@@ -129,7 +129,7 @@
     },
     "oci_core_public_ip": {
       "main": {
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "display_name": "${local.project}-public-ip",
         "lifecycle": { "ignore_changes": ["private_ip_id"] },
         "lifetime": "RESERVED"
@@ -137,7 +137,7 @@
     },
     "oci_core_route_table": {
       "private": {
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "display_name": "${local.project}-route-table-private",
         "route_rules": [
           {
@@ -154,7 +154,7 @@
         "vcn_id": "${oci_core_vcn.main.id}"
       },
       "public": {
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "display_name": "${local.project}-route-table-public",
         "route_rules": [
           {
@@ -168,7 +168,7 @@
     },
     "oci_core_service_gateway": {
       "main": {
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "display_name": "${local.project}-service-gateway",
         "services": [
           {
@@ -181,7 +181,7 @@
     "oci_core_subnet": {
       "private": {
         "cidr_block": "10.0.10.0/24",
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "display_name": "${local.project}-subnet-private",
         "dns_label": "private",
         "prohibit_public_ip_on_vnic": true,
@@ -190,7 +190,7 @@
       },
       "public": {
         "cidr_block": "10.0.1.0/24",
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "display_name": "${local.project}-subnet-public",
         "dns_label": "publicmain",
         "prohibit_public_ip_on_vnic": false,
@@ -201,14 +201,14 @@
     "oci_core_vcn": {
       "main": {
         "cidr_block": "10.0.0.0/16",
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "display_name": "${local.project}-vcn",
         "dns_label": "${local.project}"
       }
     },
     "oci_load_balancer_load_balancer": {
       "main": {
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "display_name": "${local.project}-load-balancer",
         "reserved_ips": [{ "id": "${oci_core_public_ip.main.id}" }],
         "shape": "flexible",

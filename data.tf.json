@@ -1,5 +1,6 @@
 {
   "data": {
+    "cloudflare_zone": { "main": { "filter": { "name": "mangocraft.work" } } },
     "oci_containerengine_cluster_kube_config": {
       "main": { "cluster_id": "${oci_containerengine_cluster.main.id}" }
     },
@@ -16,7 +17,7 @@
     },
     "oci_core_images": {
       "ubuntu": {
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "filter": {
           "name": "display_name",
           "regex": true,

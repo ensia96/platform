@@ -2,7 +2,7 @@
   "resource": {
     "oci_containerengine_cluster": {
       "main": {
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "endpoint_config": {
           "nsg_ids": ["${oci_core_network_security_group.cluster.id}"],
           "subnet_id": "${oci_core_subnet.private.id}"
@@ -15,7 +15,7 @@
     "oci_containerengine_node_pool": {
       "main": {
         "cluster_id": "${oci_containerengine_cluster.main.id}",
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "kubernetes_version": "${oci_containerengine_cluster.main.kubernetes_version}",
         "name": "${local.project}-node-pool-main",
         "node_config_details": {
@@ -54,7 +54,7 @@
           ]
         },
         "availability_domain": "${data.oci_identity_availability_domains.main.availability_domains.0.name}",
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "create_vnic_details": {
           "assign_public_ip": false,
           "display_name": "${local.project}-bastion-virtual-network-interface-card",
