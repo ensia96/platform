@@ -17,7 +17,7 @@
     },
     "oci_core_images": {
       "ubuntu": {
-        "compartment_id": "${oci_identity_compartment.platform.id}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
         "filter": {
           "name": "display_name",
           "regex": true,
