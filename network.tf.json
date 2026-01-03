@@ -286,14 +286,16 @@
       "main": {
         "compartment_id": "${oci_identity_compartment.main.id}",
         "display_name": "${local.project}-load-balancer",
+        "network_security_group_ids": [
+          "${oci_core_network_security_group.load-balancer.id}"
+        ],
         "reserved_ips": [{ "id": "${oci_core_public_ip.main.id}" }],
         "shape": "flexible",
         "shape_details": {
           "maximum_bandwidth_in_mbps": 10,
           "minimum_bandwidth_in_mbps": 10
         },
-        "subnet_ids": ["${oci_core_subnet.public.id}"],
-        "nsg_ids": ["${oci_core_network_security_group.load-balancer.id}"]
+        "subnet_ids": ["${oci_core_subnet.public.id}"]
       }
     }
   }
