@@ -63,11 +63,6 @@
         "display_name": "${local.project}-network-security-group-cluster",
         "vcn_id": "${oci_core_vcn.main.id}"
       },
-      "load-balancer": {
-        "compartment_id": "${oci_identity_compartment.main.id}",
-        "display_name": "${local.project}-network-security-group-lb",
-        "vcn_id": "${oci_core_vcn.main.id}"
-      },
       "worker": {
         "compartment_id": "${oci_identity_compartment.main.id}",
         "display_name": "${local.project}-network-security-group-worker",
