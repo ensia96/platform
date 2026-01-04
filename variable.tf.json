@@ -4,6 +4,7 @@
     "cluster_token": { "type": "string" },
     "email": { "type": "string" },
     "monitor_password": { "type": "string" },
+    "password": { "type": "string" },
     "region": { "type": "string" },
     "tenancy_ocid": { "type": "string" }
   }
