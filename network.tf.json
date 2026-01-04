@@ -150,6 +150,14 @@
         "source_type": "CIDR_BLOCK",
         "tcp_options": { "destination_port_range": { "max": 80, "min": 80 } }
       },
+      "worker-from-https": {
+        "direction": "INGRESS",
+        "network_security_group_id": "${oci_core_network_security_group.worker.id}",
+        "protocol": "6",
+        "source": "0.0.0.0/0",
+        "source_type": "CIDR_BLOCK",
+        "tcp_options": { "destination_port_range": { "max": 443, "min": 443 } }
+      },
       "worker-from-worker": {
         "direction": "INGRESS",
         "network_security_group_id": "${oci_core_network_security_group.worker.id}",
