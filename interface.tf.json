@@ -59,7 +59,7 @@
           "namespace": "${kubernetes_namespace_v1.system.metadata.0.name}"
         },
         "spec": {
-          "ingress_class_name": "traefik",
+          "ingress_class_name": "controller-traefik",
           "rule": [
             {
               "host": "${cloudflare_dns_record.monitor.name}",
