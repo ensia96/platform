@@ -54,7 +54,7 @@
       }
     },
     "dashboard-values": {
-      "extraArgs": ["--admin-password", "${bcrypt(var.monitor_password)}"],
+      "extraArgs": ["--admin-password", "${bcrypt(var.password)}"],
       "persistence": { "enabled": false },
       "resources": {
         "limits": { "cpu": "200m", "memory": "256Mi" },
