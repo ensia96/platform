@@ -7,13 +7,6 @@
         "namespace": "${kubernetes_namespace_v1.system.metadata.0.name}",
         "repository": "https://traefik.github.io/charts",
         "values": ["${jsonencode(local.controller-values)}"]
-      },
-      "monitor": {
-        "chart": "kube-prometheus-stack",
-        "name": "monitor",
-        "namespace": "${kubernetes_namespace_v1.system.metadata.0.name}",
-        "repository": "https://prometheus-community.github.io/helm-charts",
-        "values": ["${jsonencode(local.monitor-values)}"]
       }
     },
     "kubernetes_deployment_v1": {
@@ -46,39 +39,6 @@
               "priority_class_name": "priority-dev"
             }
           }
-        }
-      }
-    },
-    "kubernetes_ingress_v1": {
-      "monitor": {
-        "metadata": {
-          "annotations": {
-            "traefik.ingress.kubernetes.io/router.entrypoints": "websecure"
-          },
-          "name": "ingress-monitor",
-          "namespace": "${kubernetes_namespace_v1.system.metadata.0.name}"
-        },
-        "spec": {
-          "ingress_class_name": "controller-traefik",
-          "rule": [
-            {
-              "host": "${cloudflare_dns_record.monitor.name}",
-              "http": {
-                "path": [
-                  {
-                    "backend": {
-                      "service": {
-                        "name": "monitor-grafana",
-                        "port": { "number": 80 }
-                      }
-                    },
-                    "path": "/",
-                    "path_type": "Prefix"
-                  }
-                ]
-              }
-            }
-          ]
         }
       }
     },
