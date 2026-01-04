@@ -71,34 +71,6 @@
       }
     },
     "oci_logging_log": {
-      "load-balancer-access": {
-        "configuration": {
-          "source": {
-            "category": "access",
-            "resource": "${oci_load_balancer_load_balancer.main.id}",
-            "service": "loadbalancer",
-            "source_type": "OCISERVICE"
-          }
-        },
-        "display_name": "${local.project}-log-load-balancer-access",
-        "log_group_id": "${oci_logging_log_group.main.id}",
-        "log_type": "SERVICE",
-        "retention_duration": "${local.log-retention-duration}"
-      },
-      "load-balancer-error": {
-        "configuration": {
-          "source": {
-            "category": "error",
-            "resource": "${oci_load_balancer_load_balancer.main.id}",
-            "service": "loadbalancer",
-            "source_type": "OCISERVICE"
-          }
-        },
-        "display_name": "${local.project}-log-load-balancer-error",
-        "log_group_id": "${oci_logging_log_group.main.id}",
-        "log_type": "SERVICE",
-        "retention_duration": "${local.log-retention-duration}"
-      },
       "subnet-private": {
         "configuration": {
           "source": {
@@ -153,26 +125,6 @@
         "metric_compartment_id": "${oci_identity_compartment.main.id}",
         "namespace": "oci_computeagent",
         "query": "MemoryUtilization[1m].max() > 70",
-        "severity": "CRITICAL"
-      },
-      "load-balancer-bandwidth": {
-        "compartment_id": "${oci_identity_compartment.main.id}",
-        "destinations": ["${oci_ons_notification_topic.main.id}"],
-        "display_name": "${local.project}-alarm-load-balancer-bandwidth",
-        "is_enabled": true,
-        "metric_compartment_id": "${oci_identity_compartment.main.id}",
-        "namespace": "oci_lbaas",
-        "query": "InboundBandwidthUsage[1m]{resourceId = \"${oci_load_balancer_load_balancer.main.id}\"}.max() > 8",
-        "severity": "WARNING"
-      },
-      "load-balancer-health": {
-        "compartment_id": "${oci_identity_compartment.main.id}",
-        "destinations": ["${oci_ons_notification_topic.main.id}"],
-        "display_name": "${local.project}-alarm-load-balancer-health",
-        "is_enabled": true,
-        "metric_compartment_id": "${oci_identity_compartment.main.id}",
-        "namespace": "oci_lbaas",
-        "query": "UnHealthyBackendServerCount[1m]{resourceId = \"${oci_load_balancer_load_balancer.main.id}\"}.max() > 0",
         "severity": "CRITICAL"
       }
     },
