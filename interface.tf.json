@@ -177,10 +177,10 @@
         },
         "spec": {
           "hard": {
-            "limits.cpu": "2000m",
-            "limits.memory": "6Gi",
-            "requests.cpu": "1000m",
-            "requests.memory": "4Gi"
+            "limits.cpu": "4000m",
+            "limits.memory": "10Gi",
+            "requests.cpu": "2000m",
+            "requests.memory": "6Gi"
           }
         }
       }
