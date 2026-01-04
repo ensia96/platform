@@ -55,6 +55,7 @@
     },
     "domain": "mangocraft.work",
     "log-retention-duration": 30,
+    "metrics-values": { "args": ["--kubelet-insecure-tls"] },
     "project": "platform",
     "tailscale-acl": {
       "acls": [{ "action": "accept", "dst": ["*:*"], "src": ["*"] }],
