@@ -62,9 +62,7 @@
           "annotations": {
             "traefik.ingress.kubernetes.io/router.entrypoints": "websecure",
             "traefik.ingress.kubernetes.io/router.tls": "true",
-            "traefik.ingress.kubernetes.io/service.serversscheme": "http",
-            "traefik.ingress.kubernetes.io/service.sticky": "true",
-            "traefik.ingress.kubernetes.io/service.sticky.cookie.name": "portainer_sticky_session"
+            "traefik.ingress.kubernetes.io/service.serversscheme": "http"
           },
           "name": "ingress-dashboard",
           "namespace": "${kubernetes_namespace_v1.system.metadata.0.name}"
