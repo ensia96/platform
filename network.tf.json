@@ -1,5 +1,15 @@
 {
   "resource": {
+    "cloudflare_dns_record": {
+      "dashboard": {
+        "content": "${oci_core_public_ip.main.ip_address}",
+        "name": "dashboard",
+        "proxied": true,
+        "ttl": 1,
+        "type": "A",
+        "zone_id": "${cloudflare_zone.main.id}"
+      }
+    },
     "cloudflare_zone": {
       "main": {
         "account": { "id": "${data.cloudflare_account.main.id}" },
