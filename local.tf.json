@@ -45,7 +45,6 @@
       },
       "service": {
         "annotations": {
-          "oci-network-load-balancer.oraclecloud.com/is-ppv2-enabled": "true",
           "oci-network-load-balancer.oraclecloud.com/is-private": "false",
           "oci-network-load-balancer.oraclecloud.com/oci-network-security-groups": "${oci_core_network_security_group.worker.id}",
           "oci-network-load-balancer.oraclecloud.com/subnet": "${oci_core_subnet.public.id}",
