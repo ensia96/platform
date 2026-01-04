@@ -63,7 +63,7 @@
             "traefik.ingress.kubernetes.io/router.entrypoints": "websecure",
             "traefik.ingress.kubernetes.io/router.tls": "true",
             "traefik.ingress.kubernetes.io/service.serversscheme": "http",
-            "traefik.ingress.kubernetes.io/service.sticky.cookie": "true",
+            "traefik.ingress.kubernetes.io/service.sticky": "true",
             "traefik.ingress.kubernetes.io/service.sticky.cookie.name": "portainer_sticky_session"
           },
           "name": "ingress-dashboard",

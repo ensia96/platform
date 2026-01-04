@@ -54,12 +54,6 @@
       }
     },
     "dashboard-values": {
-      "extraArgs": [
-        "--admin-password",
-        "${bcrypt(var.password)}",
-        "--host",
-        "0.0.0.0"
-      ],
       "image": {
         "pullPolicy": "Always",
         "repository": "docker.io/portainer/portainer-ce",
@@ -71,7 +65,8 @@
         "limits": { "cpu": "200m", "memory": "256Mi" },
         "requests": { "cpu": "100m", "memory": "128Mi" }
       },
-      "service": { "type": "ClusterIP" }
+      "service": { "type": "ClusterIP" },
+      "serviceAccount": { "create": false, "name": "portainer-sa-clusteradmin" }
     },
     "domain": "mangocraft.work",
     "log-retention-duration": 30,
