@@ -54,12 +54,6 @@
       }
     },
     "dashboard-values": {
-      "extraArgs": [
-        "--admin-password",
-        "${bcrypt(var.password)}",
-        "--host",
-        "0.0.0.0"
-      ],
       "image": {
         "pullPolicy": "Always",
         "repository": "docker.io/portainer/portainer-ce",
