@@ -1,13 +1,6 @@
 {
   "resource": {
     "helm_release": {
-      "controller": {
-        "chart": "traefik",
-        "name": "controller",
-        "namespace": "${kubernetes_namespace_v1.system.metadata.0.name}",
-        "repository": "https://traefik.github.io/charts",
-        "values": ["${jsonencode(local.controller-values)}"]
-      },
       "monitor": {
         "chart": "kube-prometheus-stack",
         "name": "monitor",
