@@ -46,15 +46,14 @@
       },
       "service": {
         "annotations": {
-          "service.beta.kubernetes.io/oci-load-balancer-type": "nlb",
-          "service.beta.kubernetes.io/oci-network-load-balancer-display-name": "${local.project}-network-load-balancer",
-          "service.beta.kubernetes.io/oci-network-load-balancer-is-preserve-source-destination": "true",
-          "service.beta.kubernetes.io/oci-network-load-balancer-reserved-public-ip-id": "${oci_core_public_ip.main.id}",
-          "service.beta.kubernetes.io/oci-network-load-balancer-security-groups": "${oci_core_network_security_group.worker.id}",
-          "service.beta.kubernetes.io/oci-network-load-balancer-subnet": "${oci_core_subnet.public.id}"
-        },
-        "externalTrafficPolicy": "Local",
-        "type": "LoadBalancer"
+          "service.beta.kubernetes.io/oci-load-balancer-internal": "false",
+          "service.beta.kubernetes.io/oci-load-balancer-nsg-ids": "${oci_core_network_security_group.worker.id}",
+          "service.beta.kubernetes.io/oci-load-balancer-reserved-public-ip": "${oci_core_public_ip.main.ip_address}",
+          "service.beta.kubernetes.io/oci-load-balancer-shape": "flexible",
+          "service.beta.kubernetes.io/oci-load-balancer-shape-flex-max": "10",
+          "service.beta.kubernetes.io/oci-load-balancer-shape-flex-min": "10",
+          "service.beta.kubernetes.io/oci-load-balancer-subnet1": "${oci_core_subnet.public.id}"
+        }
       }
     },
     "domain": "mangocraft.work",
