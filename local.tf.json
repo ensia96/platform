@@ -53,7 +53,8 @@
           "service.beta.kubernetes.io/oci-network-load-balancer-subnet": "${oci_core_subnet.public.id}",
           "service.beta.kubernetes.io/oci-network-load-balancer-type": "nlb"
         },
-        "externalTrafficPolicy": "Local"
+        "externalTrafficPolicy": "Local",
+        "type": "LoadBalancer"
       }
     },
     "domain": "mangocraft.work",
