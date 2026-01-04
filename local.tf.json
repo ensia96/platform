@@ -54,13 +54,6 @@
       }
     },
     "dashboard-values": {
-      "env": [
-        {
-          "name": "KUBERNETES_SERVICE_HOST",
-          "value": "kubernetes.default.svc"
-        },
-        { "name": "KUBERNETES_SERVICE_PORT", "value": "443" }
-      ],
       "image": {
         "pullPolicy": "Always",
         "repository": "docker.io/portainer/portainer-ce",
