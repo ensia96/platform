@@ -62,7 +62,7 @@
           "ingress_class_name": "traefik",
           "rule": [
             {
-              "host": "monitor.${local.domain}",
+              "host": "${cloudflare_dns_record.monitor.name}.${local.domain}",
               "http": {
                 "path": [
                   {
