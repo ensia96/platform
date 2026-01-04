@@ -48,7 +48,7 @@
         "annotations": {
           "service.beta.kubernetes.io/oci-load-balancer-internal": "false",
           "service.beta.kubernetes.io/oci-load-balancer-nsg-ids": "${oci_core_network_security_group.worker.id}",
-          "service.beta.kubernetes.io/oci-load-balancer-reserved-public-ip": "${oci_core_public_ip.main.ip_address}",
+          "service.beta.kubernetes.io/oci-load-balancer-reserved-public-ip": "${oci_core_public_ip.main.id}",
           "service.beta.kubernetes.io/oci-load-balancer-shape": "flexible",
           "service.beta.kubernetes.io/oci-load-balancer-shape-flex-max": "10",
           "service.beta.kubernetes.io/oci-load-balancer-shape-flex-min": "10",
