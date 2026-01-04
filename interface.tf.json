@@ -75,7 +75,7 @@
                   {
                     "backend": {
                       "service": {
-                        "name": "dashboard",
+                        "name": "dashboard-portainer",
                         "port": { "number": 9000 }
                       }
                     },
