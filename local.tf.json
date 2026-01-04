@@ -28,7 +28,8 @@
       },
       "globalArguments": [
         "--global.checknewversion=false",
-        "--global.sendanonymoususage=false"
+        "--global.sendanonymoususage=false",
+        "--log.level=DEBUG"
       ],
       "ports": {
         "web": {
