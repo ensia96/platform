@@ -53,8 +53,18 @@
         }
       }
     },
+    "dashboard-values": {
+      "extraArgs": ["--admin-password", "${bcrypt(var.password)}"],
+      "persistence": { "enabled": false },
+      "resources": {
+        "limits": { "cpu": "200m", "memory": "256Mi" },
+        "requests": { "cpu": "100m", "memory": "128Mi" }
+      },
+      "service": { "type": "ClusterIP" }
+    },
     "domain": "mangocraft.work",
     "log-retention-duration": 30,
+    "metrics-values": { "args": ["--kubelet-insecure-tls"] },
     "project": "platform",
     "tailscale-acl": {
       "acls": [{ "action": "accept", "dst": ["*:*"], "src": ["*"] }],
