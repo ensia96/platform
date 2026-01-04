@@ -46,14 +46,14 @@
       },
       "service": {
         "annotations": {
-          "service.beta.kubernetes.io/oci-load-balancer-subnet1": "${oci_core_subnet.public.id}",
           "service.beta.kubernetes.io/oci-network-load-balancer-display-name": "${local.project}-network-load-balancer",
           "service.beta.kubernetes.io/oci-network-load-balancer-is-preserve-source-destination": "true",
+          "service.beta.kubernetes.io/oci-network-load-balancer-reserved-public-ip-id": "${oci_core_public_ip.main.id}",
           "service.beta.kubernetes.io/oci-network-load-balancer-security-groups": "${oci_core_network_security_group.worker.id}",
+          "service.beta.kubernetes.io/oci-network-load-balancer-subnet": "${oci_core_subnet.public.id}",
           "service.beta.kubernetes.io/oci-network-load-balancer-type": "nlb"
         },
-        "externalTrafficPolicy": "Local",
-        "loadBalancerIP": "${oci_core_public_ip.main.ip_address}"
+        "externalTrafficPolicy": "Local"
       }
     },
     "domain": "mangocraft.work",
