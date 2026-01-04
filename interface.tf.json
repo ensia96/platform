@@ -8,6 +8,13 @@
         "repository": "https://traefik.github.io/charts",
         "values": ["${jsonencode(local.controller-values)}"]
       },
+      "dashboard": {
+        "chart": "portainer",
+        "name": "dashboard",
+        "namespace": "${kubernetes_namespace_v1.system.metadata.0.name}",
+        "repository": "https://portainer.github.io/k8s/",
+        "values": ["${jsonencode(local.dashboard-values)}"]
+      },
       "metrics": {
         "chart": "metrics-server",
         "name": "metrics",
