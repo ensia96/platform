@@ -46,13 +46,11 @@
       },
       "service": {
         "annotations": {
-          "service.beta.kubernetes.io/oci-load-balancer-internal": "false",
-          "service.beta.kubernetes.io/oci-load-balancer-nsg-ids": "${oci_core_network_security_group.worker.id}",
-          "service.beta.kubernetes.io/oci-load-balancer-reserved-public-ip": "${oci_core_public_ip.main.id}",
-          "service.beta.kubernetes.io/oci-load-balancer-shape": "flexible",
-          "service.beta.kubernetes.io/oci-load-balancer-shape-flex-max": "10",
-          "service.beta.kubernetes.io/oci-load-balancer-shape-flex-min": "10",
-          "service.beta.kubernetes.io/oci-load-balancer-subnet1": "${oci_core_subnet.public.id}"
+          "service.beta.kubernetes.io/oci-load-balancer-type": "nlb",
+          "service.beta.kubernetes.io/oci-network-load-balancer-is-private": "false",
+          "service.beta.kubernetes.io/oci-network-load-balancer-nsg-ids": "${oci_core_network_security_group.worker.id}",
+          "service.beta.kubernetes.io/oci-network-load-balancer-reserved-public-ip": "${oci_core_public_ip.main.id}",
+          "service.beta.kubernetes.io/oci-network-load-balancer-subnet": "${oci_core_subnet.public.id}"
         }
       }
     },
