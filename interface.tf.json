@@ -61,6 +61,8 @@
         "metadata": {
           "annotations": {
             "traefik.ingress.kubernetes.io/router.entrypoints": "websecure",
+            "traefik.ingress.kubernetes.io/router.sticky.cookie": "true",
+            "traefik.ingress.kubernetes.io/router.sticky.cookie.name": "portainer_sticky_session",
             "traefik.ingress.kubernetes.io/router.tls": "true",
             "traefik.ingress.kubernetes.io/service.serversscheme": "http"
           },
