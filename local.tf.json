@@ -5,7 +5,8 @@
         "--entryPoints.websecure.forwardedHeaders.trustedIPs=${join(\",\", data.cloudflare_ip_ranges.main.ipv4_cidrs)}",
         "--global.checknewversion=false",
         "--global.sendanonymoususage=false",
-        "--log.level=DEBUG"
+        "--log.level=DEBUG",
+        "--serversTransport.insecureSkipVerify=true"
       ],
       "deployment": {
         "podAntiAffinity": {
