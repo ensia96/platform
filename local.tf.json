@@ -55,6 +55,11 @@
     },
     "dashboard-values": {
       "extraArgs": ["--admin-password", "${bcrypt(var.password)}"],
+      "image": {
+        "pullPolicy": "Always",
+        "repository": "docker.io/portainer/portainer-ce",
+        "tag": "latest"
+      },
       "persistence": { "enabled": false },
       "resources": {
         "limits": { "cpu": "200m", "memory": "256Mi" },
