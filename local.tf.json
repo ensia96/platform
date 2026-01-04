@@ -60,6 +60,7 @@
         "repository": "docker.io/portainer/portainer-ce",
         "tag": "latest"
       },
+      "ingress": { "enabled": false },
       "persistence": { "enabled": false },
       "resources": {
         "limits": { "cpu": "200m", "memory": "256Mi" },
