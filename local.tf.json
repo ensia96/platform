@@ -65,7 +65,8 @@
         "limits": { "cpu": "200m", "memory": "256Mi" },
         "requests": { "cpu": "100m", "memory": "128Mi" }
       },
-      "service": { "type": "ClusterIP" }
+      "service": { "type": "ClusterIP" },
+      "serviceAccount": { "create": false, "name": "portainer-sa-clusteradmin" }
     },
     "domain": "mangocraft.work",
     "log-retention-duration": 30,
