@@ -70,8 +70,12 @@
         "adminPassword": "${var.monitor_password}",
         "persistence": { "enabled": false },
         "resources": {
-          "limits": { "cpu": "150m", "memory": "512Mi" },
+          "limits": { "cpu": "300m", "memory": "512Mi" },
           "requests": { "cpu": "100m", "memory": "256Mi" }
+        },
+        "sidecar": {
+          "dashboards": { "enabled": true, "env": { "SC_HTTP_PORT": "8082" } },
+          "datasources": { "enabled": true, "env": { "SC_HTTP_PORT": "8081" } }
         }
       },
       "kube-state-metrics": {
@@ -93,13 +97,13 @@
       "prometheus": {
         "prometheusSpec": {
           "configReloaderResources": {
-            "limits": { "cpu": "50m", "memory": "64Mi" },
-            "requests": { "cpu": "20m", "memory": "32Mi" }
+            "limits": { "cpu": "100m", "memory": "128Mi" },
+            "requests": { "cpu": "20m", "memory": "64Mi" }
           },
           "priorityClassName": "priority-system",
           "resources": {
-            "limits": { "cpu": "300m", "memory": "800Mi" },
-            "requests": { "cpu": "100m", "memory": "512Mi" }
+            "limits": { "cpu": "1000m", "memory": "2Gi" },
+            "requests": { "cpu": "200m", "memory": "1Gi" }
           },
           "retention": "1d",
           "storageSpec": { "emptyDir": { "medium": "Memory" } }

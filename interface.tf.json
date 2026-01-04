@@ -123,8 +123,8 @@
         "spec": {
           "limit": [
             {
-              "default": { "cpu": "50m", "memory": "128Mi" },
-              "default_request": { "cpu": "20m", "memory": "64Mi" },
+              "default": { "cpu": "200m", "memory": "256Mi" },
+              "default_request": { "cpu": "100m", "memory": "128Mi" },
               "type": "Container"
             }
           ]
@@ -177,10 +177,10 @@
         },
         "spec": {
           "hard": {
-            "limits.cpu": "2000m",
-            "limits.memory": "6Gi",
-            "requests.cpu": "1000m",
-            "requests.memory": "4Gi"
+            "limits.cpu": "4000m",
+            "limits.memory": "10Gi",
+            "requests.cpu": "2000m",
+            "requests.memory": "6Gi"
           }
         }
       }
