@@ -46,7 +46,9 @@
       },
       "service": {
         "annotations": {
+          "oci-network-load-balancer.oraclecloud.com/display-name": "${local.project}-network-load-balancer",
           "oci-network-load-balancer.oraclecloud.com/oci-network-security-groups": "${oci_core_network_security_group.worker.id}",
+          "oci-network-load-balancer.oraclecloud.com/subnet": "${oci_core_subnet.public.id}",
           "service.beta.kubernetes.io/oci-network-load-balancer-type": "nlb"
         },
         "externalTrafficPolicy": "Local",
