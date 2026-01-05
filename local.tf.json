@@ -63,7 +63,7 @@
         "limits": { "cpu": "200m", "memory": "256Mi" },
         "requests": { "cpu": "100m", "memory": "128Mi" }
       },
-      "persistence": { "emptyDir": {} }
+      "persistence": { "enabled": false }
     },
     "domain": "mangocraft.work",
     "log-retention-duration": 30,
