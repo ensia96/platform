@@ -68,14 +68,6 @@
     "domain": "mangocraft.work",
     "log-retention-duration": 30,
     "metrics-values": { "args": ["--kubelet-insecure-tls"] },
-    "node-user-data": [
-      "#!/bin/bash",
-      "CONN_NAME=$(nmcli -t -f NAME connection show --active | head -n 1)",
-      "if [ -n \"$CONN_NAME\" ]; then",
-      "  nmcli connection modify \"$CONN_NAME\" 802-3-ethernet.mtu 1500",
-      "  nmcli connection up \"$CONN_NAME\"",
-      "fi"
-    ],
     "project": "platform",
     "tailscale-acl": {
       "acls": [{ "action": "accept", "dst": ["*:*"], "src": ["*"] }],
