@@ -1,5 +1,19 @@
 {
   "locals": {
+    "bootstrap-command": [
+      "nsenter",
+      "-t",
+      "1",
+      "-m",
+      "-u",
+      "-i",
+      "-n",
+      "-p",
+      "--",
+      "sh",
+      "-c",
+      "CONN=$(nmcli -t -f NAME con show --active | head -n 1); nmcli con mod \"$CONN\" 802-3-ethernet.mtu 1500 && nmcli con up \"$CONN\""
+    ],
     "controller-values": {
       "additionalArguments": [
         "--entryPoints.websecure.forwardedHeaders.trustedIPs=${join(\",\", data.cloudflare_ip_ranges.main.ipv4_cidrs)}",
@@ -68,14 +82,6 @@
     "domain": "mangocraft.work",
     "log-retention-duration": 30,
     "metrics-values": { "args": ["--kubelet-insecure-tls"] },
-    "node-user-data": [
-      "#!/bin/bash",
-      "CONN_NAME=$(nmcli -t -f NAME connection show --active | head -n 1)",
-      "if [ -n \"$CONN_NAME\" ]; then",
-      "  nmcli connection modify \"$CONN_NAME\" 802-3-ethernet.mtu 1500",
-      "  nmcli connection up \"$CONN_NAME\"",
-      "fi"
-    ],
     "project": "platform",
     "tailscale-acl": {
       "acls": [{ "action": "accept", "dst": ["*:*"], "src": ["*"] }],
