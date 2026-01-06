@@ -54,16 +54,26 @@
       }
     },
     "dashboard-values": {
+      "deployment": {
+        "initContainers": [
+          {
+            "command": ["sh", "-c", "ip link set dev eth0 mtu 1500"],
+            "image": "alpine",
+            "name": "fix-mtu",
+            "securityContext": { "privileged": true }
+          }
+        ]
+      },
       "image": {
         "pullPolicy": "Always",
         "repository": "docker.io/portainer/portainer-ce",
         "tag": "latest"
       },
+      "persistence": { "enabled": false },
       "resources": {
         "limits": { "cpu": "200m", "memory": "256Mi" },
         "requests": { "cpu": "100m", "memory": "128Mi" }
-      },
-      "persistence": { "enabled": false }
+      }
     },
     "domain": "mangocraft.work",
     "log-retention-duration": 30,
