@@ -54,16 +54,6 @@
       }
     },
     "dashboard-values": {
-      "deployment": {
-        "initContainers": [
-          {
-            "command": ["sh", "-c", "ip link set dev eth0 mtu 1500"],
-            "image": "alpine",
-            "name": "fix-mtu",
-            "securityContext": { "privileged": true }
-          }
-        ]
-      },
       "image": {
         "pullPolicy": "Always",
         "repository": "docker.io/portainer/portainer-ce",
