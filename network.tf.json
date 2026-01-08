@@ -239,7 +239,7 @@
     },
     "oci_core_subnet": {
       "internal": {
-        "cidr_block": "10.0.100.0/18",
+        "cidr_block": "10.0.64.0/18",
         "compartment_id": "${oci_identity_compartment.main.id}",
         "display_name": "${local.project}-subnet-internal",
         "dns_label": "internal",
