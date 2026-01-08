@@ -20,6 +20,14 @@
         "kubernetes_version": "${oci_containerengine_cluster.main.kubernetes_version}",
         "name": "${local.project}-node-pool-main",
         "node_config_details": {
+          "node_pool_pod_network_option_details": [
+            {
+              "cni_type": "OCI_VCN_IP_NATIVE",
+              "max_pods_per_node": 31,
+              "pod_nsg_ids": ["${oci_core_network_security_group.worker.id}"],
+              "pod_subnet_ids": ["${oci_core_subnet.internal.id}"]
+            }
+          ],
           "nsg_ids": ["${oci_core_network_security_group.worker.id}"],
           "placement_configs": [
             {
