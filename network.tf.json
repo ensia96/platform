@@ -238,6 +238,15 @@
       }
     },
     "oci_core_subnet": {
+      "internal": {
+        "cidr_block": "10.0.64.0/18",
+        "compartment_id": "${oci_identity_compartment.main.id}",
+        "display_name": "${local.project}-subnet-internal",
+        "dns_label": "internal",
+        "prohibit_public_ip_on_vnic": true,
+        "route_table_id": "${oci_core_route_table.private.id}",
+        "vcn_id": "${oci_core_vcn.main.id}"
+      },
       "private": {
         "cidr_block": "10.0.10.0/24",
         "compartment_id": "${oci_identity_compartment.main.id}",
@@ -251,7 +260,7 @@
         "cidr_block": "10.0.1.0/24",
         "compartment_id": "${oci_identity_compartment.main.id}",
         "display_name": "${local.project}-subnet-public",
-        "dns_label": "publicmain",
+        "dns_label": "public",
         "prohibit_public_ip_on_vnic": false,
         "route_table_id": "${oci_core_route_table.public.id}",
         "vcn_id": "${oci_core_vcn.main.id}"
