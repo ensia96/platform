@@ -1,5 +1,19 @@
 {
   "locals": {
+    "bootstrap-command": [
+      "nsenter",
+      "-t",
+      "1",
+      "-m",
+      "-u",
+      "-i",
+      "-n",
+      "-p",
+      "--",
+      "sh",
+      "-c",
+      "iptables -t mangle -C POSTROUTING -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu || iptables -t mangle -A POSTROUTING -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu"
+    ],
     "controller-values": {
       "additionalArguments": [
         "--entryPoints.websecure.forwardedHeaders.trustedIPs=${join(\",\", data.cloudflare_ip_ranges.main.ipv4_cidrs)}",
