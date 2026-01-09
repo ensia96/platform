@@ -12,7 +12,7 @@
       "--",
       "sh",
       "-c",
-      "IFACE=$(ip route get 8.8.8.8 | grep dev | awk '{print $5}'); ip link set dev $IFACE mtu 1500"
+      "for dev in $(ls /sys/class/net/ | grep -E '^(en|eth)'); do ip link set dev $dev mtu 1500; done"
     ],
     "controller-values": {
       "additionalArguments": [
