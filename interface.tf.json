@@ -32,18 +32,17 @@
             "metadata": { "labels": { "app": "bootstrap" } },
             "spec": {
               "container": [
-                { "image": "registry.k8s.io/pause:3.9", "name": "pause" }
-              ],
-              "host_network": true,
-              "host_pid": true,
-              "init_container": [
                 {
-                  "command": "${local.bootstrap-command}",
+                  "args": ["${join(\";\", local.bootstrap-command)}"],
+                  "command": ["/bin/sh", "-c"],
                   "image": "alpine:latest",
                   "name": "bootstrap",
                   "security_context": { "privileged": true }
                 }
-              ]
+              ],
+              "host_network": true,
+              "host_pid": true,
+              "termination_grace_period_seconds": 0
             }
           }
         }
