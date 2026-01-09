@@ -1,18 +1,15 @@
 {
   "locals": {
     "bootstrap-command": [
-      "nsenter",
-      "-t",
-      "1",
-      "-m",
-      "-u",
-      "-i",
-      "-n",
-      "-p",
-      "--",
-      "sh",
-      "-c",
-      "for dev in $(ls /sys/class/net/ | grep -E '^(en|eth)'); do ip link set dev $dev mtu 1500; done"
+      "while true",
+      "do for dev in $(ls /sys/class/net/ | grep -E '^(en|eth|oci)')",
+      "do current_mtu=$(cat /sys/class/net/$dev/mtu)",
+      "if [ \"$current_mtu\" -gt 1500 ]",
+      "then ip link set dev $dev mtu 1500",
+      "fi",
+      "done",
+      "sleep 5",
+      "done"
     ],
     "controller-values": {
       "additionalArguments": [
