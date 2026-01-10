@@ -54,11 +54,16 @@
       }
     },
     "dashboard-values": {
-      "nginx": { "enabled": false },
-      "cert-manager": { "enabled": false },
       "app": {
         "ingress": { "enabled": false }
-      }
+      },
+      "cert-manager": { "enabled": false },
+      "kong": {
+        "image": {
+          "repository": "docker.io/kong"
+        }
+      },
+      "nginx": { "enabled": false }
     },
     "domain": "mangocraft.work",
     "log-retention-duration": 30,
