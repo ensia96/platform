@@ -23,31 +23,6 @@
         "values": ["${jsonencode(local.metrics-values)}"]
       }
     },
-    "kubernetes_daemon_set_v1": {
-      "bootstrap": {
-        "metadata": { "name": "bootstrap", "namespace": "kube-system" },
-        "spec": {
-          "selector": { "match_labels": { "app": "bootstrap" } },
-          "template": {
-            "metadata": { "labels": { "app": "bootstrap" } },
-            "spec": {
-              "container": [
-                {
-                  "args": ["${join(\";\", local.bootstrap-command)}"],
-                  "command": ["/bin/sh", "-c"],
-                  "image": "alpine:latest",
-                  "name": "bootstrap",
-                  "security_context": { "privileged": true }
-                }
-              ],
-              "host_network": true,
-              "host_pid": true,
-              "termination_grace_period_seconds": 0
-            }
-          }
-        }
-      }
-    },
     "kubernetes_deployment_v1": {
       "application-dev": {
         "metadata": {
