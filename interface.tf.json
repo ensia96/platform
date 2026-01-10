@@ -192,12 +192,5 @@
         }
       }
     },
-    "kubernetes_storage_class_v1": {
-      "dummy": {
-        "metadata": { "name": "dummy" },
-        "reclaim_policy": "Retain",
-        "storage_provisioner": "kubernetes.io/no-provisioner"
-      }
-    }
   }
 }
