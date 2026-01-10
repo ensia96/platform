@@ -54,15 +54,10 @@
       }
     },
     "dashboard-values": {
-      "image": {
-        "pullPolicy": "Always",
-        "repository": "docker.io/portainer/portainer-ce",
-        "tag": "latest"
-      },
-      "persistence": { "enabled": false },
-      "resources": {
-        "limits": { "cpu": "200m", "memory": "256Mi" },
-        "requests": { "cpu": "100m", "memory": "128Mi" }
+      "nginx": { "enabled": false },
+      "cert-manager": { "enabled": false },
+      "app": {
+        "ingress": { "enabled": false }
       }
     },
     "domain": "mangocraft.work",
