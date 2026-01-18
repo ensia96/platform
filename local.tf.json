@@ -61,6 +61,9 @@
       "kong": {
         "image": {
           "repository": "docker.io/kong"
+        },
+        "proxy": {
+          "http": { "enabled": true }
         }
       },
       "nginx": { "enabled": false }

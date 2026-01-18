@@ -76,8 +76,8 @@
                   {
                     "backend": {
                       "service": {
-                        "name": "dashboard-kubernetes-dashboard-web",
-                        "port": { "number": 8000 }
+                        "name": "dashboard-kong-proxy",
+                        "port": { "number": 80 }
                       }
                     },
                     "path": "/",
