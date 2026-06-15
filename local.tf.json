@@ -69,6 +69,7 @@
       "nginx": { "enabled": false }
     },
     "domain": "mangocraft.work",
+    "kubernetes-version": "v1.36.0",
     "metrics-values": { "args": ["--kubelet-insecure-tls"] },
     "project": "platform",
     "tailscale-acl": {
