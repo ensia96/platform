@@ -10,10 +10,9 @@
         "wait": false
       },
       "dashboard": {
-        "chart": "kubernetes-dashboard",
+        "chart": "https://github.com/kubernetes-retired/dashboard/releases/download/kubernetes-dashboard-7.14.0/kubernetes-dashboard-7.14.0.tgz",
         "name": "dashboard",
         "namespace": "${kubernetes_namespace_v1.system.metadata.0.name}",
-        "repository": "https://kubernetes.github.io/dashboard/",
         "values": ["${jsonencode(local.dashboard-values)}"]
       },
       "metrics": {
