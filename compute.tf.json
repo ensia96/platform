@@ -7,7 +7,7 @@
           "nsg_ids": ["${oci_core_network_security_group.cluster.id}"],
           "subnet_id": "${oci_core_subnet.private.id}"
         },
-        "kubernetes_version": "${reverse(data.oci_containerengine_cluster_option.main.kubernetes_versions).0}",
+        "kubernetes_version": "${local.kubernetes-version}",
         "name": "${local.project}-cluster-main",
         "vcn_id": "${oci_core_vcn.main.id}"
       }

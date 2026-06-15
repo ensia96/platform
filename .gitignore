@@ -8,3 +8,4 @@
 !.github/workflows
 !.github/workflows/provision.yml
 !plan.md
+!.terraform.lock.hcl

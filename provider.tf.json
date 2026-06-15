@@ -25,11 +25,20 @@
       }
     },
     "required_providers": {
-      "cloudflare": { "source": "cloudflare/cloudflare" },
-      "helm": { "source": "hashicorp/helm" },
-      "kubernetes": { "source": "hashicorp/kubernetes" },
-      "oci": { "source": "oracle/oci" },
-      "tailscale": { "source": "tailscale/tailscale" }
+      "cloudflare": {
+        "source": "cloudflare/cloudflare",
+        "version": "= 5.15.0"
+      },
+      "helm": { "source": "hashicorp/helm", "version": "= 3.1.1" },
+      "kubernetes": {
+        "source": "hashicorp/kubernetes",
+        "version": "= 3.0.1"
+      },
+      "oci": { "source": "oracle/oci", "version": "= 7.29.0" },
+      "tailscale": {
+        "source": "tailscale/tailscale",
+        "version": "~> 0.24.0"
+      }
     }
   }
 }
