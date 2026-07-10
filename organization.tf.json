@@ -70,42 +70,6 @@
         "user_id": "${oci_identity_user.manager.id}"
       }
     },
-    "oci_monitoring_alarm": {
-      "instance-cpu": {
-        "compartment_id": "${oci_identity_compartment.main.id}",
-        "destinations": ["${oci_ons_notification_topic.main.id}"],
-        "display_name": "${local.project}-alarm-instance-cpu",
-        "is_enabled": true,
-        "metric_compartment_id": "${oci_identity_compartment.main.id}",
-        "namespace": "oci_computeagent",
-        "query": "cpuutilization[1m].max() > 40",
-        "severity": "CRITICAL"
-      },
-      "instance-memory": {
-        "compartment_id": "${oci_identity_compartment.main.id}",
-        "destinations": ["${oci_ons_notification_topic.main.id}"],
-        "display_name": "${local.project}-alarm-instance-memory",
-        "is_enabled": true,
-        "metric_compartment_id": "${oci_identity_compartment.main.id}",
-        "namespace": "oci_computeagent",
-        "query": "MemoryUtilization[1m].max() > 70",
-        "severity": "CRITICAL"
-      }
-    },
-    "oci_ons_notification_topic": {
-      "main": {
-        "compartment_id": "${oci_identity_compartment.main.id}",
-        "name": "${local.project}-notification-topic-main"
-      }
-    },
-    "oci_ons_subscription": {
-      "email": {
-        "compartment_id": "${oci_identity_compartment.main.id}",
-        "endpoint": "${var.email}",
-        "protocol": "EMAIL",
-        "topic_id": "${oci_ons_notification_topic.main.id}"
-      }
-    },
     "tailscale_acl": {
       "main": { "acl": "${jsonencode(local.tailscale-acl)}" }
     },
