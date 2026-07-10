@@ -1,18 +1,6 @@
 {
   "provider": {
     "cloudflare": {},
-    "helm": {
-      "kubernetes": {
-        "cluster_ca_certificate": "${base64decode(yamldecode(data.oci_containerengine_cluster_kube_config.main.content).clusters.0.cluster[\"certificate-authority-data\"])}",
-        "host": "${yamldecode(data.oci_containerengine_cluster_kube_config.main.content).clusters.0.cluster.server}",
-        "token": "${var.cluster_token}"
-      }
-    },
-    "kubernetes": {
-      "cluster_ca_certificate": "${base64decode(yamldecode(data.oci_containerengine_cluster_kube_config.main.content).clusters.0.cluster[\"certificate-authority-data\"])}",
-      "host": "${yamldecode(data.oci_containerengine_cluster_kube_config.main.content).clusters.0.cluster.server}",
-      "token": "${var.cluster_token}"
-    },
     "oci": {},
     "tailscale": {}
   },
@@ -28,11 +16,6 @@
       "cloudflare": {
         "source": "cloudflare/cloudflare",
         "version": "= 5.15.0"
-      },
-      "helm": { "source": "hashicorp/helm", "version": "= 3.1.1" },
-      "kubernetes": {
-        "source": "hashicorp/kubernetes",
-        "version": "= 3.0.1"
       },
       "oci": { "source": "oracle/oci", "version": "= 7.29.0" },
       "tailscale": {
