@@ -3,17 +3,15 @@
     "cloudflare_account": {
       "main": { "filter": { "name": "email", "values": "${var.email}" } }
     },
-    "cloudflare_ip_ranges": { "main": {} },
     "oci_core_images": {
       "ubuntu": {
         "compartment_id": "${oci_identity_compartment.main.id}",
         "filter": {
           "name": "display_name",
           "regex": true,
-          "values": ["^Canonical-Ubuntu-([0-9][02468])\\.04-([0-9\\.]+-?)+$"]
+          "values": ["^Canonical-Ubuntu-([0-9][02468])\\.04-aarch64-[0-9.-]+$"]
         },
-        "operating_system": "Canonical Ubuntu",
-        "shape": "VM.Standard.E2.1.Micro",
+        "shape": "${local.instance-shape}",
         "sort_by": "DISPLAYNAME",
         "sort_order": "DESC"
       }
@@ -29,12 +27,6 @@
     },
     "oci_identity_availability_domains": {
       "main": { "compartment_id": "${var.tenancy_ocid}" }
-    },
-    "oci_identity_fault_domains": {
-      "main": {
-        "availability_domain": "${data.oci_identity_availability_domains.main.availability_domains.0.name}",
-        "compartment_id": "${var.tenancy_ocid}"
-      }
     }
   }
 }

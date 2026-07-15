@@ -7,6 +7,15 @@
         "is_public": true
       }
     },
+    "oci_core_volume": {
+      "main": {
+        "availability_domain": "${data.oci_identity_availability_domains.main.availability_domains.0.name}",
+        "compartment_id": "${oci_identity_compartment.main.id}",
+        "display_name": "${local.project}-volume-main",
+        "lifecycle": { "prevent_destroy": true },
+        "size_in_gbs": 50
+      }
+    },
     "oci_objectstorage_bucket": {
       "state": {
         "compartment_id": "${var.tenancy_ocid}",

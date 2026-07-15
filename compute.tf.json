@@ -1,11 +1,11 @@
 {
   "resource": {
     "oci_core_instance": {
-      "bastion": {
+      "main": {
         "agent_config": {
+          "is_management_disabled": true,
           "plugins_config": [
             { "desired_state": "DISABLED", "name": "Vulnerability Scanning" },
-            { "desired_state": "DISABLED", "name": "Management Agent" },
             {
               "desired_state": "DISABLED",
               "name": "Compute Instance Monitoring"
@@ -16,15 +16,24 @@
         "compartment_id": "${oci_identity_compartment.main.id}",
         "create_vnic_details": {
           "assign_public_ip": false,
-          "display_name": "${local.project}-bastion-virtual-network-interface-card",
-          "nsg_ids": ["${oci_core_network_security_group.bastion.id}"],
+          "display_name": "${local.project}-virtual-network-interface-card-main",
+          "nsg_ids": ["${oci_core_network_security_group.main.id}"],
           "subnet_id": "${oci_core_subnet.private.id}"
         },
-        "display_name": "${local.project}-instance-bastion",
+        "display_name": "${local.project}-instance-main",
+        "launch_options": { "is_consistent_volume_naming_enabled": true },
+        "launch_volume_attachments": [
+          {
+            "device": "/dev/oracleoci/oraclevdb",
+            "type": "paravirtualized",
+            "volume_id": "${oci_core_volume.main.id}"
+          }
+        ],
         "metadata": {
-          "user_data": "${base64encode(join(\"\\n\", local.tailscale-user-data))}"
+          "user_data": "${base64encode(join(\"\\n\", concat(local.user-data.main.init, local.user-data.main.tailscale, local.user-data.main.storage, local.user-data.main.docker, local.user-data.main.coolify)))}"
         },
-        "shape": "VM.Standard.E2.1.Micro",
+        "shape": "${local.instance-shape}",
+        "shape_config": { "memory_in_gbs": 12, "ocpus": 2 },
         "source_details": {
           "source_id": "${data.oci_core_images.ubuntu.images.0.id}",
           "source_type": "image"

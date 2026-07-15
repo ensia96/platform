@@ -39,14 +39,6 @@
       }
     },
     "oci_identity_policy": {
-      "cluster": {
-        "compartment_id": "${var.tenancy_ocid}",
-        "description": "manage resources",
-        "name": "${local.project}-identity-policy-cluster",
-        "statements": [
-          "Allow service OKE to manage all-resources in compartment id ${oci_identity_compartment.main.id}"
-        ]
-      },
       "manager": {
         "compartment_id": "${var.tenancy_ocid}",
         "description": "manage ${local.project}",
@@ -75,10 +67,11 @@
     },
     "tailscale_tailnet_key": {
       "main": {
+        "depends_on": ["tailscale_acl.main"],
         "ephemeral": true,
         "preauthorized": true,
         "reusable": true,
-        "tags": ["${local.tailscale-acl-tag}"]
+        "tags": ["${local.tailscale-tag}"]
       }
     }
   }
