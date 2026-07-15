@@ -9,7 +9,7 @@
       }
     },
     "required_providers": {
-      "cloudflare": { "source": "cloudflare/cloudflare", "version": "~> 5.18.0" },
+      "cloudflare": { "source": "cloudflare/cloudflare" },
       "oci": { "source": "oracle/oci" },
       "tailscale": { "source": "tailscale/tailscale" }
     }
