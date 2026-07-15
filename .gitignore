@@ -7,4 +7,3 @@
 !.github/actions/setup/action.yml
 !.github/workflows
 !.github/workflows/provision.yml
-!.terraform.lock.hcl

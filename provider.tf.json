@@ -1,9 +1,5 @@
 {
-  "provider": {
-    "cloudflare": {},
-    "oci": {},
-    "tailscale": {}
-  },
+  "provider": { "cloudflare": {}, "oci": {}, "tailscale": {} },
   "terraform": {
     "backend": {
       "oci": {
@@ -13,15 +9,9 @@
       }
     },
     "required_providers": {
-      "cloudflare": {
-        "source": "cloudflare/cloudflare",
-        "version": "= 5.15.0"
-      },
-      "oci": { "source": "oracle/oci", "version": "= 7.29.0" },
-      "tailscale": {
-        "source": "tailscale/tailscale",
-        "version": "~> 0.24.0"
-      }
+      "cloudflare": { "source": "cloudflare/cloudflare" },
+      "oci": { "source": "oracle/oci" },
+      "tailscale": { "source": "tailscale/tailscale" }
     }
   }
 }
