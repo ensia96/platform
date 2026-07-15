@@ -21,7 +21,10 @@
           "subnet_id": "${oci_core_subnet.private.id}"
         },
         "display_name": "${local.project}-instance-main",
-        "launch_options": { "is_consistent_volume_naming_enabled": true },
+        "launch_options": {
+          "is_consistent_volume_naming_enabled": true,
+          "network_type": "PARAVIRTUALIZED"
+        },
         "launch_volume_attachments": [
           {
             "device": "/dev/oracleoci/oraclevdb",

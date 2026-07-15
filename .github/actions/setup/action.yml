@@ -27,7 +27,7 @@ runs:
       with:
         oauth-client-id: ${{ inputs.tailscale_client_id }}
         oauth-secret: ${{ inputs.tailscale_client_secret }}
-        tags: tag:bastion
+        tags: tag:main
 
     - name: Terraform Init
       shell: bash
