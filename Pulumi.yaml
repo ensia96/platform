@@ -1,0 +1,4 @@
+name: platform
+runtime: nodejs
+backend:
+  url: "s3://platform-state?endpoint=cnm7patunz1z.compat.objectstorage.ap-seoul-1.oraclecloud.com&region=ap-seoul-1&s3ForcePathStyle=true"

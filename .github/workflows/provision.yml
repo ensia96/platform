@@ -1,0 +1,49 @@
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.BUCKET_ACCESS_KEY }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.BUCKET_SECRET_KEY }}
+  PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_KEY }}
+  PULUMI_FALLBACK_TO_STATE_SECRETS_MANAGER: "true"
+
+jobs:
+  preview:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: npm ci
+      - uses: pulumi/actions@v7
+        with:
+          command: preview
+          stack-name: main
+          pulumi-version: 3.276.0
+          upsert: true
+
+  up:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: npm ci
+      - uses: pulumi/actions@v7
+        with:
+          command: up
+          stack-name: main
+          pulumi-version: 3.276.0
+          upsert: true

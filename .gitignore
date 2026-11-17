@@ -1,6 +1,2 @@
-*
-!.gitignore
-!*.tf.json
-!.github
-!.github/actions
-!.github/workflows
+.env
+node_modules/
