@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 env:
-  AWS_ACCESS_KEY_ID: ${{ secrets.BUCKET_ACCESS_KEY }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.BUCKET_SECRET_KEY }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.STATE_ACCESS_KEY }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.STATE_SECRET_KEY }}
   PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_KEY }}
   PULUMI_FALLBACK_TO_STATE_SECRETS_MANAGER: "true"
 
