@@ -108,6 +108,23 @@ jobs:
               ((.module // "") +
                (if (.module // "") == "" then "" else "." end) +
                .type + "." + .name);
+            def required_component($attrs; $key):
+              $attrs[$key]
+              | if type == "string" and length > 0 then .
+                else error("missing import ID component: \($key)")
+                end;
+            def import_id($resource_type; $attrs):
+              if $resource_type == "cloudflare_dns_record" then
+                "\(required_component($attrs; "zone_id"))/\(required_component($attrs; "id"))"
+              elif $resource_type == "cloudflare_zone_setting" then
+                "\(required_component($attrs; "zone_id"))/\(required_component($attrs; "setting_id"))"
+              elif $resource_type == "oci_core_network_security_group_security_rule" then
+                "networkSecurityGroups/\(required_component($attrs; "network_security_group_id"))/securityRules/\(required_component($attrs; "id"))"
+              elif $resource_type == "oci_budget_alert_rule" then
+                "budgets/\(required_component($attrs; "budget_id"))/alertRules/\(required_component($attrs; "id"))"
+              else
+                $attrs.id
+              end;
             if .lineage == "50a9f199-85b9-7fd2-ecfb-e6feb60a4908" and
                .serial == 157 and
                ([.resources[] | select(.mode == "managed") | .instances[]]
@@ -118,14 +135,43 @@ jobs:
               then . else error("required exclusion missing") end
             | .outputs = {}
             | .resources |= map(select(.mode == "managed" and
-                (address as $item | $excluded | index($item) == null)))
+                (address as $item | $excluded | index($item) == null))
+                | .type as $resource_type
+                | .instances |= map(
+                    .attributes as $attrs
+                    | .attributes.id = import_id($resource_type; $attrs)))
             | if ([.resources[].instances[]] | length) == 49
               then . else error("unexpected filtered state") end
           ' "$raw" >"$filtered"
+          jq -e '
+            def managed_instances($resource_type):
+              [.resources[]
+               | select(.mode == "managed" and .type == $resource_type)
+               | .instances[]];
+            managed_instances("cloudflare_dns_record") as $dns_records
+            | managed_instances("cloudflare_zone_setting") as $zone_settings
+            | managed_instances("oci_core_network_security_group_security_rule") as $nsg_rules
+            | managed_instances("oci_budget_alert_rule") as $budget_alerts
+            | ([.resources[] | select(.mode == "managed") | .instances[]] | length) == 49
+              and ($dns_records | length) == 2
+              and all($dns_records[];
+                .attributes.id | test("^[^/]+/[^/]+$"))
+              and ($zone_settings | length) == 5
+              and all($zone_settings[];
+                .attributes.id | test("^[^/]+/[^/]+$"))
+              and ($nsg_rules | length) == 16
+              and all($nsg_rules[];
+                .attributes.id
+                | test("^networkSecurityGroups/[^/]+/securityRules/[^/]+$"))
+              and ($budget_alerts | length) == 1
+              and all($budget_alerts[];
+                .attributes.id | test("^budgets/[^/]+/alertRules/[^/]+$"))
+          ' "$filtered" >/dev/null
           import_flags=(--from terraform "$filtered" --stack main --protect=true
             --generate-code=false --parallel 1 --suppress-outputs --suppress-progress
             --suppress-permalink=true --non-interactive --color never)
-          pulumi import "${import_flags[@]}" --preview-only
+          pulumi import "${import_flags[@]}" \
+            --generate-resources "${tmp}/preview-import.json" --preview-only
           rollback() {
             status=$?
             trap - ERR
@@ -135,7 +181,8 @@ jobs:
             exit "$status"
           }
           trap rollback ERR
-          pulumi import "${import_flags[@]}" --yes
+          pulumi import "${import_flags[@]}" \
+            --generate-resources "${tmp}/actual-import.json" --yes
           pulumi stack export \
             --stack main --file "$after" --non-interactive --color never
           jq -e '[.deployment.resources[]
