@@ -18,12 +18,6 @@
         "zone_id": "${cloudflare_zone.main.id}"
       }
     },
-    "cloudflare_zone": {
-      "main": {
-        "account": { "id": "${data.cloudflare_account.main.id}" },
-        "name": "${local.domain}"
-      }
-    },
     "cloudflare_zone_setting": {
       "secure-mode": {
         "setting_id": "always_use_https",

@@ -9,33 +9,10 @@
         "type": "FORECAST"
       }
     },
-    "oci_budget_budget": {
-      "main": {
-        "amount": 1,
-        "compartment_id": "${var.tenancy_ocid}",
-        "reset_period": "MONTHLY",
-        "target_type": "COMPARTMENT",
-        "targets": ["${var.tenancy_ocid}"]
-      }
-    },
     "oci_identity_auth_token": {
       "application": {
         "description": "${local.project}-auth-token-application",
         "user_id": "${oci_identity_user.manager.id}"
-      }
-    },
-    "oci_identity_compartment": {
-      "main": {
-        "compartment_id": "${var.tenancy_ocid}",
-        "description": "${local.project}",
-        "name": "${local.project}"
-      }
-    },
-    "oci_identity_group": {
-      "managers": {
-        "compartment_id": "${var.tenancy_ocid}",
-        "description": "manage ${local.project}",
-        "name": "${local.project}-identity-group-managers"
       }
     },
     "oci_identity_policy": {
@@ -46,20 +23,6 @@
         "statements": [
           "Allow group ${oci_identity_group.managers.name} to manage all-resources in tenancy"
         ]
-      }
-    },
-    "oci_identity_user": {
-      "manager": {
-        "compartment_id": "${var.tenancy_ocid}",
-        "description": "manage ${local.project}",
-        "email": "${local.project}@terraform.com",
-        "name": "${local.project}-identity-user-manager"
-      }
-    },
-    "oci_identity_user_group_membership": {
-      "manager": {
-        "group_id": "${oci_identity_group.managers.id}",
-        "user_id": "${oci_identity_user.manager.id}"
       }
     },
     "tailscale_acl": {
