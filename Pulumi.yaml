@@ -4,4 +4,4 @@ name: platform
 runtime:
   name: nodejs
   options:
-    nodeargs: "--require tsconfig-paths/register"
+    nodeargs: "--require ./register.cjs"
