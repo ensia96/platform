@@ -25,6 +25,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.STATE_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STATE_SECRET_KEY }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          EMAIL: ${{ secrets.EMAIL }}
           OCI_FINGERPRINT: ${{ secrets.FINGERPRINT }}
           OCI_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
           OCI_REGION: ${{ secrets.REGION }}
