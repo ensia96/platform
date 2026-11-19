@@ -1,4 +1,4 @@
-import { _PROJECT, _TENANCY_OCID } from "@/config";
+import { _EMAIL, _PROJECT, _TENANCY_OCID } from "@/config";
 import * as oci from "@pulumi/oci";
 
 export const budget = new oci.budget.Budget(
@@ -9,6 +9,18 @@ export const budget = new oci.budget.Budget(
     resetPeriod: "MONTHLY",
     targets: [_TENANCY_OCID],
     targetType: "COMPARTMENT",
+  },
+  { protect: true },
+);
+
+export const budgetAlert = new oci.budget.Rule(
+  "main",
+  {
+    budgetId: budget.id,
+    recipients: _EMAIL,
+    threshold: 1,
+    thresholdType: "PERCENTAGE",
+    type: "FORECAST",
   },
   { protect: true },
 );
@@ -43,5 +55,18 @@ export const managers = new oci.identity.Group(
 export const managerMembership = new oci.identity.UserGroupMembership(
   "manager",
   { groupId: managers.id, userId: manager.id },
+  { protect: true },
+);
+
+export const managerPolicy = new oci.identity.Policy(
+  "manager",
+  {
+    compartmentId: _TENANCY_OCID,
+    description: `manage ${_PROJECT}`,
+    name: `${_PROJECT}-identity-policy-manager`,
+    statements: managers.name.apply((name) => [
+      `Allow group ${name} to manage all-resources in tenancy`,
+    ]),
+  },
   { protect: true },
 );
