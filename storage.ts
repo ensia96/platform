@@ -1,4 +1,4 @@
-import { AVAILABILITY_DOMAINS, PROJECT } from "@/config";
+import { AVAILABILITY_DOMAINS, PROJECT, TENANCY_OCID } from "@/config";
 import { compartment } from "@/organization";
 import * as oci from "@pulumi/oci";
 
@@ -8,6 +8,15 @@ export const containerRepository = new oci.artifacts.ContainerRepository(
     compartmentId: compartment.id,
     displayName: `${PROJECT}-repository-application`,
     isPublic: true,
+  },
+  { protect: true },
+);
+export const stateBucket = new oci.objectstorage.Bucket(
+  "state",
+  {
+    compartmentId: TENANCY_OCID,
+    name: `${PROJECT}-state`,
+    namespace: "cnm7patunz1z",
   },
   { protect: true },
 );

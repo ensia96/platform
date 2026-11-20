@@ -37,6 +37,14 @@ export const managers = new oci.identity.Group(
   { protect: true },
 );
 
+export const authToken = new oci.identity.AuthToken(
+  "application",
+  {
+    description: `${PROJECT}-auth-token-application`,
+    userId: manager.id,
+  },
+  { protect: true },
+);
 export const budgetAlert = new oci.budget.Rule(
   "main",
   {
