@@ -13,18 +13,6 @@ export const budget = new oci.budget.Budget(
   { protect: true },
 );
 
-export const budgetAlert = new oci.budget.Rule(
-  "main",
-  {
-    budgetId: budget.id,
-    recipients: _EMAIL,
-    threshold: 1,
-    thresholdType: "PERCENTAGE",
-    type: "FORECAST",
-  },
-  { protect: true },
-);
-
 export const compartment = new oci.identity.Compartment(
   "main",
   { compartmentId: _TENANCY_OCID, description: _PROJECT, name: _PROJECT },
@@ -48,6 +36,18 @@ export const managers = new oci.identity.Group(
     compartmentId: _TENANCY_OCID,
     description: `manage ${_PROJECT}`,
     name: `${_PROJECT}-identity-group-managers`,
+  },
+  { protect: true },
+);
+
+export const budgetAlert = new oci.budget.Rule(
+  "main",
+  {
+    budgetId: budget.id,
+    recipients: _EMAIL,
+    threshold: 1,
+    thresholdType: "PERCENTAGE",
+    type: "FORECAST",
   },
   { protect: true },
 );
