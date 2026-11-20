@@ -1,9 +1,5 @@
 {
   "data": {
-    "cloudflare_account": {
-      "main": { "filter": { "name": "email", "values": "${var.email}" } }
-    },
-    "cloudflare_ip_ranges": { "main": {} },
     "oci_core_images": {
       "ubuntu": {
         "compartment_id": "${oci_identity_compartment.main.id}",
@@ -16,18 +12,6 @@
         "sort_by": "DISPLAYNAME",
         "sort_order": "DESC"
       }
-    },
-    "oci_core_services": {
-      "all_services": {
-        "filter": {
-          "name": "name",
-          "regex": true,
-          "values": ["All .* Services In Oracle Services Network"]
-        }
-      }
-    },
-    "oci_identity_availability_domains": {
-      "main": { "compartment_id": "${var.tenancy_ocid}" }
     }
   }
 }

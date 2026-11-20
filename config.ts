@@ -1,0 +1,77 @@
+import { env } from "@/lib";
+import * as cloudflare from "@pulumi/cloudflare";
+import * as oci from "@pulumi/oci";
+
+export const CLOUDFLARE_IPV4_CIDRS = cloudflare
+  .getIpRanges()
+  .then(({ ipv4Cidrs }) => ipv4Cidrs);
+export const DOMAIN_NAME = "mangocraft.work";
+export const EMAIL = env("EMAIL");
+export const INSTANCE_SHAPE = "VM.Standard.A1.Flex";
+export const OCI_SERVICES = oci.core.getServicesOutput({
+  filters: [
+    {
+      name: "name",
+      regex: true,
+      values: ["All .* Services In Oracle Services Network"],
+    },
+  ],
+}).services;
+export const PROJECT = "platform";
+export const SETUP_COOLIFY = String.raw`curl -fsSL https://cdn.coollabs.io/coolify/install.sh | DOCKER_ADDRESS_POOL_BASE=172.16.0.0/16 DOCKER_ADDRESS_POOL_SIZE=24 bash
+[ "$(docker info --format '{{.DockerRootDir}}')" = /data/docker ]`;
+export const SETUP_DOCKER = String.raw`install -d -m 0755 /data/docker /etc/docker
+cat > /etc/docker/daemon.json <<'JSON'
+{
+  "data-root": "/data/docker",
+  "default-address-pools": [{ "base": "172.16.0.0/16", "size": 24 }],
+  "log-driver": "json-file",
+  "log-opts": { "max-file": "3", "max-size": "10m" }
+}
+JSON`;
+export const SETUP_INIT = String.raw`#!/bin/bash
+set -euo pipefail
+for attempt in $(seq 1 12); do
+  if apt-get update; then break; fi
+  if [ "$attempt" -eq 12 ]; then echo 'network unavailable after 60 seconds' >&2; exit 1; fi
+  sleep 5
+done
+apt-get install -y ca-certificates curl e2fsprogs util-linux`;
+export const SETUP_STORAGE = String.raw`DEVICE=/dev/oracleoci/oraclevdb
+udevadm settle
+for attempt in $(seq 1 30); do
+  if [ -b "$DEVICE" ]; then break; fi
+  if [ "$attempt" -eq 30 ]; then echo "$DEVICE unavailable after 60 seconds" >&2; exit 1; fi
+  sleep 2
+done
+filesystem="$(lsblk -dnro FSTYPE "$DEVICE")"
+if [ "$filesystem" = ext4 ]; then
+  echo "reusing ext4 filesystem on $DEVICE"
+elif [ -n "$filesystem" ]; then
+  echo "unsupported filesystem $filesystem on $DEVICE" >&2
+  exit 1
+elif [ "$(lsblk -nrpo NAME "$DEVICE" | wc -l)" -ne 1 ] || [ -n "$(wipefs --no-act --parsable "$DEVICE")" ]; then
+  echo "existing partition or signature found on $DEVICE; refusing to format" >&2
+  exit 1
+else
+  mkfs.ext4 -L platform-data "$DEVICE"
+fi
+uuid="$(blkid -s UUID -o value "$DEVICE")"
+[ -n "$uuid" ]
+mkdir -p /data
+if grep -Eq '[[:space:]]/data[[:space:]]' /etc/fstab; then
+  grep -Eq "^UUID=$uuid[[:space:]]+/data[[:space:]]+ext4[[:space:]]" /etc/fstab || { echo 'unexpected /data fstab entry' >&2; exit 1; }
+else
+  printf 'UUID=%s /data ext4 defaults,nofail,x-systemd.device-timeout=60 0 2\n' "$uuid" >> /etc/fstab
+fi
+mountpoint -q /data || mount /data
+[ "$(findmnt -nro UUID --target /data)" = "$uuid" ]`;
+export const TAILSCALE_TAG = "tag:main";
+export const TENANCY_OCID = env("OCI_TENANCY_OCID");
+
+export const AVAILABILITY_DOMAINS = oci.identity.getAvailabilityDomainsOutput({
+  compartmentId: TENANCY_OCID,
+}).availabilityDomains;
+export const CLOUDFLARE_ACCOUNT = {
+  id: cloudflare.getZoneOutput({ filter: { name: DOMAIN_NAME } }).account.id,
+};
