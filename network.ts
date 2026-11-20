@@ -17,7 +17,6 @@ export const publicIp = new oci.core.PublicIp(
   },
   { ignoreChanges: ["privateIpId"], protect: true },
 );
-
 export const vcn = new oci.core.Vcn(
   "main",
   {
@@ -28,7 +27,6 @@ export const vcn = new oci.core.Vcn(
   },
   { protect: true },
 );
-
 export const zone = new cloudflare.Zone(
   "main",
   { account: CLOUDFLARE_ACCOUNT, name: _DOMAIN_NAME },
@@ -47,7 +45,6 @@ export const apiDevRecord = new cloudflare.DnsRecord(
   },
   { protect: true },
 );
-
 export const apiMainRecord = new cloudflare.DnsRecord(
   "api-main",
   {
@@ -60,7 +57,6 @@ export const apiMainRecord = new cloudflare.DnsRecord(
   },
   { protect: true },
 );
-
 export const internetGateway = new oci.core.InternetGateway(
   "main",
   {
@@ -70,7 +66,6 @@ export const internetGateway = new oci.core.InternetGateway(
   },
   { protect: true },
 );
-
 export const loadBalancerNetworkSecurityGroup =
   new oci.core.NetworkSecurityGroup(
     "load-balancer",
@@ -81,7 +76,6 @@ export const loadBalancerNetworkSecurityGroup =
     },
     { protect: true },
   );
-
 export const mainNetworkSecurityGroup = new oci.core.NetworkSecurityGroup(
   "main",
   {
@@ -91,7 +85,6 @@ export const mainNetworkSecurityGroup = new oci.core.NetworkSecurityGroup(
   },
   { protect: true },
 );
-
 export const natGateway = new oci.core.NatGateway(
   "main",
   {
@@ -101,19 +94,16 @@ export const natGateway = new oci.core.NatGateway(
   },
   { protect: true },
 );
-
 export const secureMode = new cloudflare.ZoneSetting(
   "secure-mode",
   { settingId: "always_use_https", value: "on", zoneId: zone.id },
   { protect: true },
 );
-
 export const securityLevel = new cloudflare.ZoneSetting(
   "security-level",
   { settingId: "security_level", value: "medium", zoneId: zone.id },
   { protect: true },
 );
-
 export const serviceGateway = new oci.core.ServiceGateway(
   "main",
   {
@@ -128,21 +118,76 @@ export const serviceGateway = new oci.core.ServiceGateway(
   },
   { protect: true },
 );
-
 export const sslMode = new cloudflare.ZoneSetting(
   "ssl-mode",
   { settingId: "ssl", value: "full", zoneId: zone.id },
   { protect: true },
 );
-
 export const tlsVersion = new cloudflare.ZoneSetting(
   "tls-version",
   { settingId: "min_tls_version", value: "1.2", zoneId: zone.id },
   { protect: true },
 );
-
 export const websocket = new cloudflare.ZoneSetting(
   "websocket",
   { settingId: "websockets", value: "on", zoneId: zone.id },
+  { protect: true },
+);
+
+export const httpsMainFromLoadBalancerRule =
+  new oci.core.NetworkSecurityGroupSecurityRule(
+    "https-main-from-load-balancer",
+    {
+      direction: "INGRESS",
+      networkSecurityGroupId: mainNetworkSecurityGroup.id,
+      protocol: "6",
+      source: loadBalancerNetworkSecurityGroup.id,
+      sourceType: "NETWORK_SECURITY_GROUP",
+      tcpOptions: { destinationPortRange: { max: 443, min: 443 } },
+    },
+    { protect: true },
+  );
+export const privateRouteTable = new oci.core.RouteTable(
+  "private",
+  {
+    compartmentId: compartment.id,
+    displayName: `${_PROJECT}-route-table-private`,
+    routeRules: [
+      {
+        destination: "0.0.0.0/0",
+        destinationType: "CIDR_BLOCK",
+        networkEntityId: natGateway.id,
+        routeType: "STATIC",
+      },
+      {
+        destination: OCI_SERVICES.apply((services) => {
+          const service = services[0];
+          if (!service) throw new Error("OCI service is required");
+          return service.cidrBlock;
+        }),
+        destinationType: "SERVICE_CIDR_BLOCK",
+        networkEntityId: serviceGateway.id,
+        routeType: "STATIC",
+      },
+    ],
+    vcnId: vcn.id,
+  },
+  { protect: true },
+);
+export const publicRouteTable = new oci.core.RouteTable(
+  "public",
+  {
+    compartmentId: compartment.id,
+    displayName: `${_PROJECT}-route-table-public`,
+    routeRules: [
+      {
+        destination: "0.0.0.0/0",
+        destinationType: "CIDR_BLOCK",
+        networkEntityId: internetGateway.id,
+        routeType: "STATIC",
+      },
+    ],
+    vcnId: vcn.id,
+  },
   { protect: true },
 );

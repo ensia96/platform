@@ -9,45 +9,6 @@
         "source": "${each.value}",
         "source_type": "CIDR_BLOCK",
         "tcp_options": { "destination_port_range": { "max": 443, "min": 443 } }
-      },
-      "https-main-from-load-balancer": {
-        "direction": "INGRESS",
-        "network_security_group_id": "${oci_core_network_security_group.main.id}",
-        "protocol": "6",
-        "source": "${oci_core_network_security_group.load-balancer.id}",
-        "source_type": "NETWORK_SECURITY_GROUP",
-        "tcp_options": { "destination_port_range": { "max": 443, "min": 443 } }
-      }
-    },
-    "oci_core_route_table": {
-      "private": {
-        "compartment_id": "${oci_identity_compartment.main.id}",
-        "display_name": "${local.project}-route-table-private",
-        "route_rules": [
-          {
-            "destination": "0.0.0.0/0",
-            "destination_type": "CIDR_BLOCK",
-            "network_entity_id": "${oci_core_nat_gateway.main.id}"
-          },
-          {
-            "destination": "${data.oci_core_services.all_services.services.0.cidr_block}",
-            "destination_type": "SERVICE_CIDR_BLOCK",
-            "network_entity_id": "${oci_core_service_gateway.main.id}"
-          }
-        ],
-        "vcn_id": "${oci_core_vcn.main.id}"
-      },
-      "public": {
-        "compartment_id": "${oci_identity_compartment.main.id}",
-        "display_name": "${local.project}-route-table-public",
-        "route_rules": [
-          {
-            "destination": "0.0.0.0/0",
-            "destination_type": "CIDR_BLOCK",
-            "network_entity_id": "${oci_core_internet_gateway.main.id}"
-          }
-        ],
-        "vcn_id": "${oci_core_vcn.main.id}"
       }
     },
     "oci_core_subnet": {

@@ -2,22 +2,7 @@ import { env } from "@/lib";
 import * as cloudflare from "@pulumi/cloudflare";
 import * as oci from "@pulumi/oci";
 
-export const _DOMAIN_NAME = "mangocraft.work";
-export const _EMAIL = env("EMAIL");
-export const _INSTANCE_SHAPE = "VM.Standard.A1.Flex";
-export const _PROJECT = "platform";
-export const _TAILSCALE_TAG = "tag:main";
-export const _TENANCY_OCID = env("OCI_TENANCY_OCID");
-
-export const AVAILABILITY_DOMAINS = oci.identity.getAvailabilityDomainsOutput({
-  compartmentId: _TENANCY_OCID,
-}).availabilityDomains;
-
-export const CLOUDFLARE_ACCOUNT = {
-  id: cloudflare.getZoneOutput({ filter: { name: _DOMAIN_NAME } }).account.id,
-};
-export const CLOUDFLARE_IP_RANGES = cloudflare.getIpRangesOutput().ipv4Cidrs;
-
+export const CLOUDFLARE_IPV4_CIDRS = cloudflare.getIpRangesOutput().ipv4Cidrs;
 export const OCI_SERVICES = oci.core.getServicesOutput({
   filters: [
     {
@@ -27,7 +12,6 @@ export const OCI_SERVICES = oci.core.getServicesOutput({
     },
   ],
 }).services;
-
 export const SETUP_COOLIFY = String.raw`curl -fsSL https://cdn.coollabs.io/coolify/install.sh | DOCKER_ADDRESS_POOL_BASE=172.16.0.0/16 DOCKER_ADDRESS_POOL_SIZE=24 bash
 [ "$(docker info --format '{{.DockerRootDir}}')" = /data/docker ]`;
 export const SETUP_DOCKER = String.raw`install -d -m 0755 /data/docker /etc/docker
@@ -76,3 +60,16 @@ else
 fi
 mountpoint -q /data || mount /data
 [ "$(findmnt -nro UUID --target /data)" = "$uuid" ]`;
+export const _DOMAIN_NAME = "mangocraft.work";
+export const _EMAIL = env("EMAIL");
+export const _INSTANCE_SHAPE = "VM.Standard.A1.Flex";
+export const _PROJECT = "platform";
+export const _TAILSCALE_TAG = "tag:main";
+export const _TENANCY_OCID = env("OCI_TENANCY_OCID");
+
+export const AVAILABILITY_DOMAINS = oci.identity.getAvailabilityDomainsOutput({
+  compartmentId: _TENANCY_OCID,
+}).availabilityDomains;
+export const CLOUDFLARE_ACCOUNT = {
+  id: cloudflare.getZoneOutput({ filter: { name: _DOMAIN_NAME } }).account.id,
+};
