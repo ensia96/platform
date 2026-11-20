@@ -1,49 +1,5 @@
 {
   "resource": {
-    "cloudflare_dns_record": {
-      "api-dev": {
-        "content": "${oci_core_public_ip.main.ip_address}",
-        "name": "dev-api",
-        "proxied": true,
-        "ttl": 1,
-        "type": "A",
-        "zone_id": "${cloudflare_zone.main.id}"
-      },
-      "api-main": {
-        "content": "${oci_core_public_ip.main.ip_address}",
-        "name": "api",
-        "proxied": true,
-        "ttl": 1,
-        "type": "A",
-        "zone_id": "${cloudflare_zone.main.id}"
-      }
-    },
-    "oci_core_internet_gateway": {
-      "main": {
-        "compartment_id": "${oci_identity_compartment.main.id}",
-        "display_name": "${local.project}-internet-gateway",
-        "vcn_id": "${oci_core_vcn.main.id}"
-      }
-    },
-    "oci_core_nat_gateway": {
-      "main": {
-        "compartment_id": "${oci_identity_compartment.main.id}",
-        "display_name": "${local.project}-nat-gateway",
-        "vcn_id": "${oci_core_vcn.main.id}"
-      }
-    },
-    "oci_core_network_security_group": {
-      "load-balancer": {
-        "compartment_id": "${oci_identity_compartment.main.id}",
-        "display_name": "${local.project}-network-security-group-load-balancer",
-        "vcn_id": "${oci_core_vcn.main.id}"
-      },
-      "main": {
-        "compartment_id": "${oci_identity_compartment.main.id}",
-        "display_name": "${local.project}-network-security-group-main",
-        "vcn_id": "${oci_core_vcn.main.id}"
-      }
-    },
     "oci_core_network_security_group_security_rule": {
       "https-load-balancer-from-cloudflare": {
         "direction": "INGRESS",
@@ -89,18 +45,6 @@
             "destination": "0.0.0.0/0",
             "destination_type": "CIDR_BLOCK",
             "network_entity_id": "${oci_core_internet_gateway.main.id}"
-          }
-        ],
-        "vcn_id": "${oci_core_vcn.main.id}"
-      }
-    },
-    "oci_core_service_gateway": {
-      "main": {
-        "compartment_id": "${oci_identity_compartment.main.id}",
-        "display_name": "${local.project}-service-gateway",
-        "services": [
-          {
-            "service_id": "${data.oci_core_services.all_services.services.0.id}"
           }
         ],
         "vcn_id": "${oci_core_vcn.main.id}"
