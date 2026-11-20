@@ -2,7 +2,9 @@ import { env } from "@/lib";
 import * as cloudflare from "@pulumi/cloudflare";
 import * as oci from "@pulumi/oci";
 
-export const CLOUDFLARE_IPV4_CIDRS = cloudflare.getIpRangesOutput().ipv4Cidrs;
+export const CLOUDFLARE_IPV4_CIDRS = cloudflare
+  .getIpRanges()
+  .then(({ ipv4Cidrs }) => ipv4Cidrs);
 export const DOMAIN_NAME = "mangocraft.work";
 export const EMAIL = env("EMAIL");
 export const INSTANCE_SHAPE = "VM.Standard.A1.Flex";

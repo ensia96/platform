@@ -1,5 +1,6 @@
 import {
   CLOUDFLARE_ACCOUNT,
+  CLOUDFLARE_IPV4_CIDRS,
   DOMAIN_NAME,
   OCI_SERVICES,
   PROJECT,
@@ -134,6 +135,26 @@ export const websocket = new cloudflare.ZoneSetting(
   { protect: true },
 );
 
+export const httpsLoadBalancerFromCloudflareRules = CLOUDFLARE_IPV4_CIDRS.then(
+  (cidrs) =>
+    Array.from(new Set(cidrs))
+      .sort()
+      .map(
+        (cidr) =>
+          new oci.core.NetworkSecurityGroupSecurityRule(
+            `https-load-balancer-from-cloudflare-${cidr}`,
+            {
+              direction: "INGRESS",
+              networkSecurityGroupId: loadBalancerNetworkSecurityGroup.id,
+              protocol: "6",
+              source: cidr,
+              sourceType: "CIDR_BLOCK",
+              tcpOptions: { destinationPortRange: { max: 443, min: 443 } },
+            },
+            { protect: true },
+          ),
+      ),
+);
 export const httpsMainFromLoadBalancerRule =
   new oci.core.NetworkSecurityGroupSecurityRule(
     "https-main-from-load-balancer",
@@ -187,6 +208,33 @@ export const publicRouteTable = new oci.core.RouteTable(
         routeType: "STATIC",
       },
     ],
+    vcnId: vcn.id,
+  },
+  { protect: true },
+);
+
+export const privateSubnet = new oci.core.Subnet(
+  "private",
+  {
+    cidrBlock: "10.0.10.0/24",
+    compartmentId: compartment.id,
+    displayName: `${PROJECT}-subnet-private`,
+    dnsLabel: "private",
+    prohibitPublicIpOnVnic: true,
+    routeTableId: privateRouteTable.id,
+    vcnId: vcn.id,
+  },
+  { protect: true },
+);
+export const publicSubnet = new oci.core.Subnet(
+  "public",
+  {
+    cidrBlock: "10.0.1.0/24",
+    compartmentId: compartment.id,
+    displayName: `${PROJECT}-subnet-public`,
+    dnsLabel: "public",
+    prohibitPublicIpOnVnic: false,
+    routeTableId: publicRouteTable.id,
     vcnId: vcn.id,
   },
   { protect: true },
