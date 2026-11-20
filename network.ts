@@ -1,8 +1,8 @@
 import {
   CLOUDFLARE_ACCOUNT,
+  DOMAIN_NAME,
   OCI_SERVICES,
-  _DOMAIN_NAME,
-  _PROJECT,
+  PROJECT,
 } from "@/config";
 import { compartment } from "@/organization";
 import * as cloudflare from "@pulumi/cloudflare";
@@ -12,7 +12,7 @@ export const publicIp = new oci.core.PublicIp(
   "main",
   {
     compartmentId: compartment.id,
-    displayName: `${_PROJECT}-public-ip`,
+    displayName: `${PROJECT}-public-ip`,
     lifetime: "RESERVED",
   },
   { ignoreChanges: ["privateIpId"], protect: true },
@@ -22,14 +22,14 @@ export const vcn = new oci.core.Vcn(
   {
     cidrBlocks: ["10.0.0.0/16"],
     compartmentId: compartment.id,
-    displayName: `${_PROJECT}-vcn`,
-    dnsLabel: _PROJECT,
+    displayName: `${PROJECT}-vcn`,
+    dnsLabel: PROJECT,
   },
   { protect: true },
 );
 export const zone = new cloudflare.Zone(
   "main",
-  { account: CLOUDFLARE_ACCOUNT, name: _DOMAIN_NAME },
+  { account: CLOUDFLARE_ACCOUNT, name: DOMAIN_NAME },
   { protect: true },
 );
 
@@ -37,7 +37,7 @@ export const apiDevRecord = new cloudflare.DnsRecord(
   "api-dev",
   {
     content: publicIp.ipAddress,
-    name: `dev-api.${_DOMAIN_NAME}`,
+    name: `dev-api.${DOMAIN_NAME}`,
     proxied: true,
     ttl: 1,
     type: "A",
@@ -49,7 +49,7 @@ export const apiMainRecord = new cloudflare.DnsRecord(
   "api-main",
   {
     content: publicIp.ipAddress,
-    name: `api.${_DOMAIN_NAME}`,
+    name: `api.${DOMAIN_NAME}`,
     proxied: true,
     ttl: 1,
     type: "A",
@@ -61,7 +61,7 @@ export const internetGateway = new oci.core.InternetGateway(
   "main",
   {
     compartmentId: compartment.id,
-    displayName: `${_PROJECT}-internet-gateway`,
+    displayName: `${PROJECT}-internet-gateway`,
     vcnId: vcn.id,
   },
   { protect: true },
@@ -71,7 +71,7 @@ export const loadBalancerNetworkSecurityGroup =
     "load-balancer",
     {
       compartmentId: compartment.id,
-      displayName: `${_PROJECT}-network-security-group-load-balancer`,
+      displayName: `${PROJECT}-network-security-group-load-balancer`,
       vcnId: vcn.id,
     },
     { protect: true },
@@ -80,7 +80,7 @@ export const mainNetworkSecurityGroup = new oci.core.NetworkSecurityGroup(
   "main",
   {
     compartmentId: compartment.id,
-    displayName: `${_PROJECT}-network-security-group-main`,
+    displayName: `${PROJECT}-network-security-group-main`,
     vcnId: vcn.id,
   },
   { protect: true },
@@ -89,7 +89,7 @@ export const natGateway = new oci.core.NatGateway(
   "main",
   {
     compartmentId: compartment.id,
-    displayName: `${_PROJECT}-nat-gateway`,
+    displayName: `${PROJECT}-nat-gateway`,
     vcnId: vcn.id,
   },
   { protect: true },
@@ -108,7 +108,7 @@ export const serviceGateway = new oci.core.ServiceGateway(
   "main",
   {
     compartmentId: compartment.id,
-    displayName: `${_PROJECT}-service-gateway`,
+    displayName: `${PROJECT}-service-gateway`,
     services: OCI_SERVICES.apply((services) => {
       const service = services[0];
       if (!service) throw new Error("OCI service is required");
@@ -151,7 +151,7 @@ export const privateRouteTable = new oci.core.RouteTable(
   "private",
   {
     compartmentId: compartment.id,
-    displayName: `${_PROJECT}-route-table-private`,
+    displayName: `${PROJECT}-route-table-private`,
     routeRules: [
       {
         destination: "0.0.0.0/0",
@@ -178,7 +178,7 @@ export const publicRouteTable = new oci.core.RouteTable(
   "public",
   {
     compartmentId: compartment.id,
-    displayName: `${_PROJECT}-route-table-public`,
+    displayName: `${PROJECT}-route-table-public`,
     routeRules: [
       {
         destination: "0.0.0.0/0",

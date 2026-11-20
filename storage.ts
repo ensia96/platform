@@ -1,4 +1,4 @@
-import { AVAILABILITY_DOMAINS, _PROJECT } from "@/config";
+import { AVAILABILITY_DOMAINS, PROJECT } from "@/config";
 import { compartment } from "@/organization";
 import * as oci from "@pulumi/oci";
 
@@ -6,12 +6,11 @@ export const containerRepository = new oci.artifacts.ContainerRepository(
   "application",
   {
     compartmentId: compartment.id,
-    displayName: `${_PROJECT}-repository-application`,
+    displayName: `${PROJECT}-repository-application`,
     isPublic: true,
   },
   { protect: true },
 );
-
 export const volume = new oci.core.Volume(
   "main",
   {
@@ -19,7 +18,7 @@ export const volume = new oci.core.Volume(
       (domains) => domains[0].name,
     ),
     compartmentId: compartment.id,
-    displayName: `${_PROJECT}-volume-main`,
+    displayName: `${PROJECT}-volume-main`,
     sizeInGbs: "50",
   },
   { protect: true },
