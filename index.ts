@@ -5,9 +5,7 @@ import * as tailscale from "@pulumi/tailscale";
 
 const DOMAIN_NAME = "mangocraft.work";
 const EMAIL = env("EMAIL");
-const INSTANCE_SHAPE = "VM.Standard.A1.Flex";
 const PROJECT = "platform";
-const IMPORT_INSTANCE_ID = process.env.PULUMI_IMPORT_INSTANCE_ID;
 const TAILSCALE_TAG = "tag:main";
 const TENANCY_OCID = env("OCI_TENANCY_OCID");
 
@@ -398,65 +396,18 @@ const aclDocument = privateSubnet.cidrBlock.apply((cidr) =>
   }),
 );
 const acl = new tailscale.Acl("main", { acl: aclDocument }, { protect: true });
-const ubuntuImages = oci.core.getImagesOutput({
-  compartmentId: compartment.id,
-  filters: [
-    {
-      name: "display_name",
-      regex: true,
-      values: ["^Canonical-Ubuntu-([0-9][02468])\\.04-aarch64-[0-9.-]+$"],
-    },
-  ],
-  shape: INSTANCE_SHAPE,
-  sortBy: "DISPLAYNAME",
-  sortOrder: "DESC",
-}).images;
-const ubuntuImageId = ubuntuImages.apply((images) => {
-  const image = images[0];
-  if (!image) throw new Error("OCI Ubuntu image is required");
-  return image.id;
-});
-const instance = new oci.core.Instance(
-  "main",
-  {
-    agentConfig: {
-      isManagementDisabled: true,
-      pluginsConfigs: [
-        { desiredState: "DISABLED", name: "Vulnerability Scanning" },
-        { desiredState: "DISABLED", name: "Compute Instance Monitoring" },
-      ],
-    },
-    availabilityDomain,
+const existingCoolifyInstanceId = oci.core
+  .getInstancesOutput({
     compartmentId: compartment.id,
-    createVnicDetails: {
-      assignPublicIp: "false",
-      displayName: `${PROJECT}-virtual-network-interface-card-main`,
-      nsgIds: [mainNetworkSecurityGroup.id],
-      subnetId: privateSubnet.id,
-    },
     displayName: `${PROJECT}-instance-main`,
-    launchOptions: {
-      isConsistentVolumeNamingEnabled: true,
-      networkType: "PARAVIRTUALIZED",
-    },
-    launchVolumeAttachments: [
-      {
-        device: "/dev/oracleoci/oraclevdb",
-        type: "paravirtualized",
-        volumeId: volume.id,
-      },
-    ],
-    shape: INSTANCE_SHAPE,
-    shapeConfig: { memoryInGbs: 12, ocpus: 2 },
-    sourceDetails: { sourceId: ubuntuImageId, sourceType: "image" },
-  },
-  {
-    additionalSecretOutputs: ["metadata"],
-    import: IMPORT_INSTANCE_ID,
-    ignoreChanges: ["metadata"],
-    protect: true,
-  },
-);
+    state: "RUNNING",
+  })
+  .instances.apply((instances) => {
+    if (instances.length !== 1) {
+      throw new Error("exactly one running legacy OCI instance is required");
+    }
+    return instances[0].id;
+  });
 
 const httpsBackendSet = new oci.networkloadbalancer.BackendSet(
   "https",
@@ -486,7 +437,7 @@ const httpsBackend = new oci.networkloadbalancer.Backend(
     backendSetName: httpsBackendSet.name,
     networkLoadBalancerId: networkLoadBalancer.id,
     port: 443,
-    targetId: instance.id,
+    targetId: existingCoolifyInstanceId,
   },
   { protect: true },
 );
