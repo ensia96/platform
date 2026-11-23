@@ -7,8 +7,6 @@ const DOMAIN_NAME = "mangocraft.work";
 const EMAIL = env("EMAIL");
 const INSTANCE_SHAPE = "VM.Standard.A1.Flex";
 const PROJECT = "platform";
-const IMPORT_INSTANCE_ID = process.env.PULUMI_IMPORT_INSTANCE_ID;
-const IMPORT_TAILNET_KEY_ID = process.env.PULUMI_IMPORT_TAILNET_KEY_ID;
 const TAILSCALE_TAG = "tag:main";
 const TENANCY_OCID = env("OCI_TENANCY_OCID");
 
@@ -411,7 +409,6 @@ const tailnetKey = new tailscale.TailnetKey(
   {
     additionalSecretOutputs: ["key"],
     dependsOn: [acl],
-    import: IMPORT_TAILNET_KEY_ID,
     protect: true,
   },
 );
@@ -469,7 +466,6 @@ const instance = new oci.core.Instance(
   },
   {
     additionalSecretOutputs: ["metadata"],
-    import: IMPORT_INSTANCE_ID,
     ignoreChanges: ["metadata"],
     protect: true,
   },
