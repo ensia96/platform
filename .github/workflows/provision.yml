@@ -107,10 +107,10 @@ jobs:
           set -euo pipefail
           umask 077
 
-          readonly TAILNET_URN="urn:pulumi:main::platform::tailscale:index/tailnetKey:TailnetKey::main"
           readonly INSTANCE_URN="urn:pulumi:main::platform::oci:Core/instance:Instance::main"
           readonly PUBLIC_IP_URN="urn:pulumi:main::platform::oci:Core/publicIp:PublicIp::main"
           readonly NLB_URN="urn:pulumi:main::platform::oci:NetworkLoadBalancer/networkLoadBalancer:NetworkLoadBalancer::main"
+          readonly NLB_PREFIX="urn:pulumi:main::platform::oci:NetworkLoadBalancer/"
 
           tmp="$(mktemp -d "${RUNNER_TEMP}/reconcile-state.XXXXXX")"
           backup="$tmp/backup.json"
@@ -141,7 +141,6 @@ jobs:
                   --stack main --file "$rollback_state" --non-interactive --color never \
                   >/dev/null 2>&1 &&
                 jq -e \
-                  --arg tailnet "$TAILNET_URN" \
                   --arg instance "$INSTANCE_URN" \
                   --arg nlb "$NLB_URN" '
                     [.deployment.resources[]
@@ -149,7 +148,7 @@ jobs:
                               (.type | startswith("pulumi:providers:") | not))] as $custom
                     | [.deployment.resources[] | select(.urn == $nlb)] as $nlbs
                     | ($custom | length) == 51 and
-                      ([$custom[] | select(.urn == $tailnet or .urn == $instance)] | length) == 0 and
+                      ([$custom[] | select(.urn == $instance)] | length) == 0 and
                       ($nlbs | length) == 1 and
                       (($nlbs[0].inputs // {}) | has("reservedIps") | not)
                   ' "$rollback_state" >/dev/null 2>&1; then
@@ -192,11 +191,9 @@ jobs:
                | .instances[]];
             .lineage == "50a9f199-85b9-7fd2-ecfb-e6feb60a4908" and
             .serial == 157 and
-            (instances("tailscale_tailnet_key"; "main") | length) == 1 and
             (instances("oci_core_instance"; "main") | length) == 1 and
             (instances("oci_core_public_ip"; "main") | length) == 1 and
             (instances("oci_network_load_balancer_network_load_balancer"; "main") | length) == 1 and
-            (instances("tailscale_tailnet_key"; "main")[0].attributes.id | type == "string" and length > 0) and
             (instances("oci_core_instance"; "main")[0].attributes.id | type == "string" and length > 0) and
             (instances("oci_core_public_ip"; "main")[0].attributes.id | type == "string" and length > 0) and
             (instances("oci_network_load_balancer_network_load_balancer"; "main")[0].attributes.id | type == "string" and length > 0) and
@@ -205,7 +202,6 @@ jobs:
              instances("oci_core_public_ip"; "main")[0].attributes.id)
           ' "$raw" >/dev/null
 
-          tailnet_id="$(jq -er '[.resources[] | select(.mode == "managed" and .type == "tailscale_tailnet_key" and .name == "main") | .instances[].attributes.id][0]' "$raw")"
           instance_id="$(jq -er '[.resources[] | select(.mode == "managed" and .type == "oci_core_instance" and .name == "main") | .instances[].attributes.id][0]' "$raw")"
           nlb_id="$(jq -er '[.resources[] | select(.mode == "managed" and .type == "oci_network_load_balancer_network_load_balancer" and .name == "main") | .instances[].attributes.id][0]' "$raw")"
           public_ip_id="$(jq -er '[.resources[] | select(.mode == "managed" and .type == "oci_core_public_ip" and .name == "main") | .instances[].attributes.id][0]' "$raw")"
@@ -221,7 +217,6 @@ jobs:
 
           log_stage "VALIDATE_BASELINE_STATE"
           jq -e \
-            --arg tailnet "$TAILNET_URN" \
             --arg instance "$INSTANCE_URN" \
             --arg nlb "$NLB_URN" \
             --arg nlb_id "$nlb_id" \
@@ -235,7 +230,7 @@ jobs:
               | ($custom | length) == 51 and
                 ($nlbs | length) == 1 and
                 ($public_ips | length) == 1 and
-                ([.deployment.resources[] | select(.urn == $tailnet or .urn == $instance)] | length) == 0 and
+                ([.deployment.resources[] | select(.urn == $instance)] | length) == 0 and
                 $nlbs[0].id == $nlb_id and
                 $public_ips[0].id == $public_ip_id and
                 (($nlbs[0].inputs // {}) | has("reservedIps") | not) and
@@ -244,6 +239,32 @@ jobs:
                    (($reserved | length) == 0 or
                     (($reserved | length) == 1 and $reserved[0].id == $public_ip_id)))
             ' "$backup" >/dev/null
+
+          log_stage "PREVIEW_BASELINE"
+          baseline_preview="$tmp/baseline-preview.json"
+          pulumi preview \
+            --stack main --json --parallel 1 \
+            --suppress-outputs --suppress-progress --suppress-permalink=true \
+            --non-interactive --color never >"$baseline_preview"
+
+          log_stage "VALIDATE_BASELINE_PREVIEW"
+          jq -e \
+            --arg instance "$INSTANCE_URN" \
+            --arg nlb_prefix "$NLB_PREFIX" '
+              (.changeSummary.create // 0) == 1 and
+              (.changeSummary.replace // 0) == 4 and
+              (.changeSummary.same // 0) == 48 and
+              ([.changeSummary | to_entries[]
+                | select(.key != "create" and .key != "replace" and .key != "same" and .value != 0)] | length) == 0 and
+              ([.steps[] | select(.op == "create") | .urn] | unique) == [$instance] and
+              ([.steps[] | select(.op == "replace") | .urn
+                | select(startswith($nlb_prefix))] | unique | length) == 4 and
+              ([.steps[] | select(.op == "replace") | .urn
+                | select(startswith($nlb_prefix) | not)] | length) == 0 and
+              ([.steps[] | select(.op != "create" and .op != "replace" and .op != "same")] | length) == 0 and
+              ([.diagnostics[]? | select(.severity == "error")] | length) == 0
+            ' "$baseline_preview" >/dev/null
+          printf 'RECONCILE_SUCCESS_STAGE: BASELINE_PREVIEW_VALIDATED\n'
 
           log_stage "BUILD_NLB_PATCH"
           patched="$tmp/patched.json"
@@ -303,7 +324,6 @@ jobs:
             >/dev/null 2>&1
           printf 'RECONCILE_SUCCESS_STAGE: NLB_PATCH_APPLIED\n'
 
-          export PULUMI_IMPORT_TAILNET_KEY_ID="$tailnet_id"
           export PULUMI_IMPORT_INSTANCE_ID="$instance_id"
 
           log_stage "PREVIEW_IMPORT_PLAN"
@@ -315,7 +335,7 @@ jobs:
           chmod 0600 "$preview" "$preview_stderr"
           if ! pulumi preview \
             --stack main --json --save-plan "$plan" \
-            --target "$TAILNET_URN" --target "$INSTANCE_URN" \
+            --target "$INSTANCE_URN" \
             --parallel 1 --suppress-outputs --suppress-progress \
             --suppress-permalink=true --non-interactive --color never \
             >"$preview" 2>"$preview_stderr"; then
@@ -345,13 +365,12 @@ jobs:
 
           log_stage "VALIDATE_IMPORT_PLAN"
           jq -e \
-            --arg tailnet "$TAILNET_URN" \
             --arg instance "$INSTANCE_URN" '
-              (.changeSummary.import // 0) == 2 and
+              (.changeSummary.import // 0) == 1 and
               (.changeSummary.same // 0) == 52 and
               ([.changeSummary | to_entries[]
                 | select(.key != "import" and .key != "same" and .value != 0)] | length) == 0 and
-              ([.steps[] | select(.op == "import") | .urn] | unique | sort) == ([$tailnet, $instance] | sort) and
+              ([.steps[] | select(.op == "import") | .urn] | unique) == [$instance] and
               ([.steps[] | select(.op != "import" and .op != "same")] | length) == 0 and
               ([.diagnostics[]? | select(.severity == "error")] | length) == 0
             ' "$preview" >/dev/null
@@ -361,21 +380,21 @@ jobs:
           update="$tmp/import-update.jsonl"
           pulumi up \
             --stack main --yes --json --plan "$plan" \
-            --target "$TAILNET_URN" --target "$INSTANCE_URN" \
+            --target "$INSTANCE_URN" \
             --parallel 1 --suppress-outputs --suppress-progress \
             --suppress-permalink=true --non-interactive --color never >"$update"
 
           log_stage "VALIDATE_IMPORT_UPDATE"
           jq -s -e '
             ([.[] | select(.summaryEvent != null) | .summaryEvent.resourceChanges] | last) as $changes
-            | ($changes.import // 0) == 2 and
+            | ($changes.import // 0) == 1 and
               ($changes.same // 0) == 52 and
               ([$changes | to_entries[]
                 | select(.key != "import" and .key != "same" and .value != 0)] | length) == 0
           ' "$update" >/dev/null
           printf 'RECONCILE_SUCCESS_STAGE: IMPORTS_APPLIED\n'
 
-          unset PULUMI_IMPORT_TAILNET_KEY_ID PULUMI_IMPORT_INSTANCE_ID
+          unset PULUMI_IMPORT_INSTANCE_ID
 
           log_stage "FINAL_PREVIEW"
           final_preview="$tmp/final-preview.json"
@@ -386,13 +405,13 @@ jobs:
 
           log_stage "VALIDATE_FINAL_PREVIEW"
           jq -e '
-            (.changeSummary.same // 0) == 54 and
+            (.changeSummary.same // 0) == 53 and
             ([.changeSummary | to_entries[]
               | select(.key != "same" and .value != 0)] | length) == 0 and
             ([.steps[] | select(.op != "same")] | length) == 0 and
             ([.diagnostics[]? | select(.severity == "error")] | length) == 0
           ' "$final_preview" >/dev/null
-          printf 'RECONCILE_SUCCESS_STAGE: FINAL_PREVIEW_54_SAME\n'
+          printf 'RECONCILE_SUCCESS_STAGE: FINAL_PREVIEW_53_SAME\n'
 
           log_stage "EXPORT_FINAL_STATE"
           final="$tmp/final.json"
@@ -402,15 +421,12 @@ jobs:
 
           log_stage "VALIDATE_FINAL_STATE"
           jq -e \
-            --arg tailnet "$TAILNET_URN" \
-            --arg tailnet_id "$tailnet_id" \
             --arg instance "$INSTANCE_URN" \
             --arg instance_id "$instance_id" '
               [.deployment.resources[]
-               | select(.type != "pulumi:pulumi:Stack" and
-                        (.type | startswith("pulumi:providers:") | not))] as $custom
-              | ($custom | length) == 53 and
-                ([$custom[] | select(.urn == $tailnet and .id == $tailnet_id)] | length) == 1 and
+                | select(.type != "pulumi:pulumi:Stack" and
+                         (.type | startswith("pulumi:providers:") | not))] as $custom
+              | ($custom | length) == 52 and
                 ([$custom[] | select(.urn == $instance and .id == $instance_id)] | length) == 1
             ' "$final" >/dev/null
 
