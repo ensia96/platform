@@ -7,59 +7,8 @@ const DOMAIN_NAME = "mangocraft.work";
 const EMAIL = env("EMAIL");
 const INSTANCE_SHAPE = "VM.Standard.A1.Flex";
 const PROJECT = "platform";
-const SETUP_COOLIFY = String.raw`curl -fsSL https://cdn.coollabs.io/coolify/install.sh | DOCKER_ADDRESS_POOL_BASE=172.16.0.0/16 DOCKER_ADDRESS_POOL_SIZE=24 bash
-[ "$(docker info --format '{{.DockerRootDir}}')" = /data/docker ]`;
-const SETUP_DOCKER = String.raw`install -d -m 0755 /data/docker /etc/docker
-cat > /etc/docker/daemon.json <<'JSON'
-{
-  "data-root": "/data/docker",
-  "default-address-pools": [
-    { "base": "172.16.0.0/16", "size": 24 }
-  ],
-  "log-driver": "json-file",
-  "log-opts": {
-    "max-file": "3",
-    "max-size": "10m"
-  }
-}
-JSON`;
-const SETUP_INIT = String.raw`#!/bin/bash
-set -euo pipefail
-for attempt in $(seq 1 12); do
-  if apt-get update; then break; fi
-  if [ "$attempt" -eq 12 ]; then echo 'network unavailable after 60 seconds' >&2; exit 1; fi
-  sleep 5
-done
-apt-get install -y ca-certificates curl e2fsprogs util-linux`;
-const SETUP_STORAGE = String.raw`DEVICE=/dev/oracleoci/oraclevdb
-udevadm settle
-for attempt in $(seq 1 30); do
-  if [ -b "$DEVICE" ]; then break; fi
-  if [ "$attempt" -eq 30 ]; then echo "$DEVICE unavailable after 60 seconds" >&2; exit 1; fi
-  sleep 2
-done
-filesystem="$(lsblk -dnro FSTYPE "$DEVICE")"
-if [ "$filesystem" = ext4 ]; then
-  echo "reusing ext4 filesystem on $DEVICE"
-elif [ -n "$filesystem" ]; then
-  echo "unsupported filesystem $filesystem on $DEVICE" >&2
-  exit 1
-elif [ "$(lsblk -nrpo NAME "$DEVICE" | wc -l)" -ne 1 ] || [ -n "$(wipefs --no-act --parsable "$DEVICE")" ]; then
-  echo "existing partition or signature found on $DEVICE; refusing to format" >&2
-  exit 1
-else
-  mkfs.ext4 -L platform-data "$DEVICE"
-fi
-uuid="$(blkid -s UUID -o value "$DEVICE")"
-[ -n "$uuid" ]
-mkdir -p /data
-if grep -Eq '[[:space:]]/data[[:space:]]' /etc/fstab; then
-  grep -Eq "^UUID=$uuid[[:space:]]+/data[[:space:]]+ext4[[:space:]]" /etc/fstab || { echo 'unexpected /data fstab entry' >&2; exit 1; }
-else
-  printf 'UUID=%s /data ext4 defaults,nofail,x-systemd.device-timeout=60 0 2\n' "$uuid" >> /etc/fstab
-fi
-mountpoint -q /data || mount /data
-[ "$(findmnt -nro UUID --target /data)" = "$uuid" ]`;
+const IMPORT_INSTANCE_ID = process.env.PULUMI_IMPORT_INSTANCE_ID;
+const IMPORT_TAILNET_KEY_ID = process.env.PULUMI_IMPORT_TAILNET_KEY_ID;
 const TAILSCALE_TAG = "tag:main";
 const TENANCY_OCID = env("OCI_TENANCY_OCID");
 
@@ -455,12 +404,14 @@ const tailnetKey = new tailscale.TailnetKey(
   {
     ephemeral: true,
     preauthorized: true,
+    recreateIfInvalid: "never",
     reusable: true,
     tags: [TAILSCALE_TAG],
   },
   {
     additionalSecretOutputs: ["key"],
     dependsOn: [acl],
+    import: IMPORT_TAILNET_KEY_ID,
     protect: true,
   },
 );
@@ -482,21 +433,6 @@ const ubuntuImageId = ubuntuImages.apply((images) => {
   if (!image) throw new Error("OCI Ubuntu image is required");
   return image.id;
 });
-const userData = tailnetKey.key.apply((key) =>
-  Buffer.from(
-    [
-      SETUP_INIT,
-      String.raw`curl -fsSL https://tailscale.com/install.sh | sh
-tailscale up \
---authkey=${key} \
---hostname=${PROJECT}-main \
---ssh`,
-      SETUP_STORAGE,
-      SETUP_DOCKER,
-      SETUP_COOLIFY,
-    ].join("\n"),
-  ).toString("base64"),
-);
 const instance = new oci.core.Instance(
   "main",
   {
@@ -527,12 +463,16 @@ const instance = new oci.core.Instance(
         volumeId: volume.id,
       },
     ],
-    metadata: { user_data: userData },
     shape: INSTANCE_SHAPE,
     shapeConfig: { memoryInGbs: 12, ocpus: 2 },
     sourceDetails: { sourceId: ubuntuImageId, sourceType: "image" },
   },
-  { protect: true },
+  {
+    additionalSecretOutputs: ["metadata"],
+    import: IMPORT_INSTANCE_ID,
+    ignoreChanges: ["metadata"],
+    protect: true,
+  },
 );
 
 const httpsBackendSet = new oci.networkloadbalancer.BackendSet(
