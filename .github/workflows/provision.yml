@@ -308,12 +308,39 @@ jobs:
 
           log_stage "PREVIEW_IMPORT_PLAN"
           preview="$tmp/import-preview.json"
+          preview_stderr="$tmp/import-preview.stderr"
           plan="$tmp/import-plan.json"
-          pulumi preview \
+          : >"$preview"
+          : >"$preview_stderr"
+          chmod 0600 "$preview" "$preview_stderr"
+          if ! pulumi preview \
             --stack main --json --save-plan "$plan" \
             --target "$TAILNET_URN" --target "$INSTANCE_URN" \
             --parallel 1 --suppress-outputs --suppress-progress \
-            --suppress-permalink=true --non-interactive --color never >"$preview"
+            --suppress-permalink=true --non-interactive --color never \
+            >"$preview" 2>"$preview_stderr"; then
+            diagnostics="$tmp/import-preview-diagnostics"
+            jq -r '
+              select(.diagnostic.severity == "error")
+              | (.diagnostic.message // empty)
+              | gsub("[\\r\\n]+"; " ")
+            ' "$preview" 2>/dev/null | head -n 6 >"$diagnostics" || true
+            chmod 0600 "$diagnostics"
+            redact() {
+              sed -E \
+                -e $'s/\x1b\\[[0-9;?]*[ -\\/]*[@-~]//g' \
+                -e "s/((token|secret|password|private_key|client_secret|authkey)[[:space:]]*[:=][[:space:]]*)(\"[^\"]*\"|'[^']*'|[^[:space:],;]+)/\\1***/Ig" \
+                | cut -c1-600
+            }
+            if [[ -s "$diagnostics" ]]; then
+              printf 'RECONCILE_JSON_ERRORS:\n'
+              redact <"$diagnostics"
+            else
+              printf 'RECONCILE_STDERR_TAIL:\n'
+              tail -n 10 "$preview_stderr" | redact
+            fi
+            exit 1
+          fi
 
           log_stage "VALIDATE_IMPORT_PLAN"
           jq -e \
