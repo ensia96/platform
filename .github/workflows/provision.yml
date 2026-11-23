@@ -321,8 +321,9 @@ jobs:
             >"$preview" 2>"$preview_stderr"; then
             diagnostics="$tmp/import-preview-diagnostics"
             jq -r '
-              select(.diagnostic.severity == "error")
-              | (.diagnostic.message // empty)
+              .diagnostics[]?
+              | select(.severity == "error")
+              | (.message // empty)
               | gsub("[\\r\\n]+"; " ")
             ' "$preview" 2>/dev/null | head -n 6 >"$diagnostics" || true
             chmod 0600 "$diagnostics"
