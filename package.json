@@ -3,6 +3,7 @@
     "@pulumi/cloudflare": "6.24.0",
     "@pulumi/oci": "5.7.0",
     "@pulumi/pulumi": "3.276.0",
-    "@pulumi/tailscale": "0.30.0"
+    "@pulumi/tailscale": "0.30.0",
+    "tsconfig-paths": "4.2.0"
   }
 }

@@ -25,6 +25,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.STATE_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STATE_SECRET_KEY }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          EMAIL: ${{ secrets.EMAIL }}
           OCI_FINGERPRINT: ${{ secrets.FINGERPRINT }}
           OCI_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
           OCI_REGION: ${{ secrets.REGION }}
@@ -35,7 +36,7 @@ jobs:
           TAILSCALE_OAUTH_CLIENT_ID: ${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}
           TAILSCALE_OAUTH_CLIENT_SECRET: ${{ secrets.TAILSCALE_OAUTH_CLIENT_SECRET }}
         with:
-          command: ${{ github.event_name == 'pull_request' && 'preview' || 'up' }}
+          command: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'up' || 'preview' }}
           stack-name: main
           pulumi-version: 3.276.0
           upsert: true

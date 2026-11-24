@@ -1,6 +1,0 @@
-{
-  "variable": {
-    "email": { "type": "string" },
-    "tenancy_ocid": { "type": "string" }
-  }
-}
