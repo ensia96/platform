@@ -40,3 +40,52 @@ jobs:
           stack-name: main
           pulumi-version: 3.276.0
           upsert: true
+      - name: Observe main NLB refresh preview once
+        if: >-
+          github.event_name == 'pull_request' && github.event.action == 'synchronize' &&
+          github.event.number == 132 && github.head_ref == 'dev' &&
+          github.event.pull_request.head.repo.full_name == github.repository &&
+          github.event.before == 'bb0afc541dd9b13a1fd42f4ee8ce805191b3319a' && github.run_attempt == '1'
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.STATE_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.STATE_SECRET_KEY }}
+          OCI_FINGERPRINT: ${{ secrets.FINGERPRINT }}
+          OCI_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          OCI_REGION: ${{ secrets.REGION }}
+          OCI_TENANCY_OCID: ${{ secrets.TENANCY_OCID }}
+          OCI_USER_OCID: ${{ secrets.USER_OCID }}
+          PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_KEY }}
+          PULUMI_FALLBACK_TO_STATE_SECRETS_MANAGER: "true"
+          PULUMI_ENABLE_STREAMING_JSON_PREVIEW: "true"
+        shell: python
+        run: |
+          import json, subprocess
+
+          urn = "urn:pulumi:main::platform::oci:NetworkLoadBalancer/networkLoadBalancer:NetworkLoadBalancer::main"
+          result = subprocess.run([
+              "pulumi", "refresh", "--preview-only", "--stack", "main", "--target", urn,
+              "--run-program=false", "--json", "--non-interactive", "--color", "never",
+          ], capture_output=True)
+          if result.returncode:
+              raise SystemExit("NLB refresh preview failed; raw diagnostics withheld")
+
+          events = [json.loads(line) for line in result.stdout.splitlines() if line.strip()]
+          reads = [e["resourcePreEvent"]["metadata"]["urn"] for e in events
+                   if e.get("resourcePreEvent", {}).get("metadata", {}).get("op") == "refresh"]
+          outputs = [e["resOutputsEvent"]["metadata"] for e in events
+                     if e.get("resOutputsEvent", {}).get("metadata", {}).get("urn") == urn]
+          if reads != [urn] or len(outputs) != 1:
+              raise SystemExit("Unexpected refresh scope or missing NLB result")
+          step = outputs[0]
+          warning = 'Failed to apply "__pulumi_raw_state_delta"'
+          messages = [e["diagnosticEvent"]["message"] for e in events if "diagnosticEvent" in e]
+          print("raw-state warning observed:", any(warning in m for m in messages) or warning.encode() in result.stderr)
+          if step["new"] is None:
+              raise SystemExit("NLB missing on provider read; stop")
+          for field in ("inputs", "outputs"):
+              before = step["old"][field]["reservedIps"]
+              after = step["new"][field].get("reservedIps")
+              if not isinstance(before, list) or len(before) != 1 or not before[0].get("id"):
+                  raise SystemExit("Unexpected reservedIps baseline")
+              change = "unchanged" if after == before else "removed" if after in (None, []) else "changed"
+              print(f"{field}.reservedIps: {change}")
