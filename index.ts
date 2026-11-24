@@ -1,13 +1,11 @@
-import { env } from "@/lib";
+import { PROJECT, TENANCY_OCID } from "@/config";
+import { setUpProjectFoundation } from "@/set-up-project-foundation";
 import * as cloudflare from "@pulumi/cloudflare";
 import * as oci from "@pulumi/oci";
 import * as tailscale from "@pulumi/tailscale";
 
 const DOMAIN_NAME = "mangocraft.work";
-const EMAIL = env("EMAIL");
-const PROJECT = "platform";
 const TAILSCALE_TAG = "tag:main";
-const TENANCY_OCID = env("OCI_TENANCY_OCID");
 
 const cloudflareIpv4Cidrs = cloudflare
   .getIpRanges()
@@ -33,96 +31,17 @@ const cloudflareAccount = {
   id: cloudflare.getZoneOutput({ filter: { name: DOMAIN_NAME } }).account.id,
 };
 
-const budget = new oci.budget.Budget(
-  "main",
-  {
-    amount: 1,
-    compartmentId: TENANCY_OCID,
-    resetPeriod: "MONTHLY",
-    targets: [TENANCY_OCID],
-    targetType: "COMPARTMENT",
-  },
-  { protect: true },
-);
-const compartment = new oci.identity.Compartment(
-  "main",
-  { compartmentId: TENANCY_OCID, description: PROJECT, name: PROJECT },
-  { protect: true },
-);
-const manager = new oci.identity.User(
-  "manager",
-  {
-    compartmentId: TENANCY_OCID,
-    description: `manage ${PROJECT}`,
-    email: `${PROJECT}@terraform.com`,
-    name: `${PROJECT}-identity-user-manager`,
-  },
-  { protect: true },
-);
-const managers = new oci.identity.Group(
-  "managers",
-  {
-    compartmentId: TENANCY_OCID,
-    description: `manage ${PROJECT}`,
-    name: `${PROJECT}-identity-group-managers`,
-  },
-  { protect: true },
-);
-const stateBucket = new oci.objectstorage.Bucket(
-  "state",
-  {
-    compartmentId: TENANCY_OCID,
-    name: `${PROJECT}-state`,
-    namespace: "cnm7patunz1z",
-  },
-  { protect: true },
-);
+const projectFoundation = setUpProjectFoundation();
 const zone = new cloudflare.Zone(
   "main",
   { account: cloudflareAccount, name: DOMAIN_NAME },
   { protect: true },
 );
 
-const authToken = new oci.identity.AuthToken(
-  "application",
-  {
-    description: `${PROJECT}-auth-token-application`,
-    userId: manager.id,
-  },
-  { protect: true },
-);
-const budgetAlert = new oci.budget.Rule(
-  "main",
-  {
-    budgetId: budget.id,
-    recipients: EMAIL,
-    threshold: 1,
-    thresholdType: "PERCENTAGE",
-    type: "FORECAST",
-  },
-  { protect: true },
-);
-const managerMembership = new oci.identity.UserGroupMembership(
-  "manager",
-  { groupId: managers.id, userId: manager.id },
-  { protect: true },
-);
-const managerPolicy = new oci.identity.Policy(
-  "manager",
-  {
-    compartmentId: TENANCY_OCID,
-    description: `manage ${PROJECT}`,
-    name: `${PROJECT}-identity-policy-manager`,
-    statements: managers.name.apply((name) => [
-      `Allow group ${name} to manage all-resources in tenancy`,
-    ]),
-  },
-  { protect: true },
-);
 const containerRepository = new oci.artifacts.ContainerRepository(
   "application",
   {
-    compartmentId: compartment.id,
+    compartmentId: projectFoundation.compartment.id,
     displayName: `${PROJECT}-repository-application`,
     isPublic: true,
   },
@@ -131,7 +50,7 @@ const containerRepository = new oci.artifacts.ContainerRepository(
 const publicIp = new oci.core.PublicIp(
   "main",
   {
-    compartmentId: compartment.id,
+    compartmentId: projectFoundation.compartment.id,
     displayName: `${PROJECT}-public-ip`,
     lifetime: "RESERVED",
   },
@@ -141,7 +60,7 @@ const vcn = new oci.core.Vcn(
   "main",
   {
     cidrBlocks: ["10.0.0.0/16"],
-    compartmentId: compartment.id,
+    compartmentId: projectFoundation.compartment.id,
     displayName: `${PROJECT}-vcn`,
     dnsLabel: PROJECT,
   },
@@ -151,7 +70,7 @@ const volume = new oci.core.Volume(
   "main",
   {
     availabilityDomain,
-    compartmentId: compartment.id,
+    compartmentId: projectFoundation.compartment.id,
     displayName: `${PROJECT}-volume-main`,
     sizeInGbs: "50",
   },
@@ -185,7 +104,7 @@ const apiMainRecord = new cloudflare.DnsRecord(
 const internetGateway = new oci.core.InternetGateway(
   "main",
   {
-    compartmentId: compartment.id,
+    compartmentId: projectFoundation.compartment.id,
     displayName: `${PROJECT}-internet-gateway`,
     vcnId: vcn.id,
   },
@@ -194,7 +113,7 @@ const internetGateway = new oci.core.InternetGateway(
 const loadBalancerNetworkSecurityGroup = new oci.core.NetworkSecurityGroup(
   "load-balancer",
   {
-    compartmentId: compartment.id,
+    compartmentId: projectFoundation.compartment.id,
     displayName: `${PROJECT}-network-security-group-load-balancer`,
     vcnId: vcn.id,
   },
@@ -203,7 +122,7 @@ const loadBalancerNetworkSecurityGroup = new oci.core.NetworkSecurityGroup(
 const mainNetworkSecurityGroup = new oci.core.NetworkSecurityGroup(
   "main",
   {
-    compartmentId: compartment.id,
+    compartmentId: projectFoundation.compartment.id,
     displayName: `${PROJECT}-network-security-group-main`,
     vcnId: vcn.id,
   },
@@ -212,7 +131,7 @@ const mainNetworkSecurityGroup = new oci.core.NetworkSecurityGroup(
 const natGateway = new oci.core.NatGateway(
   "main",
   {
-    compartmentId: compartment.id,
+    compartmentId: projectFoundation.compartment.id,
     displayName: `${PROJECT}-nat-gateway`,
     vcnId: vcn.id,
   },
@@ -231,7 +150,7 @@ const securityLevel = new cloudflare.ZoneSetting(
 const serviceGateway = new oci.core.ServiceGateway(
   "main",
   {
-    compartmentId: compartment.id,
+    compartmentId: projectFoundation.compartment.id,
     displayName: `${PROJECT}-service-gateway`,
     services: ociServices.apply((services) => {
       const service = services[0];
@@ -293,7 +212,7 @@ const httpsMainFromLoadBalancerRule =
 const privateRouteTable = new oci.core.RouteTable(
   "private",
   {
-    compartmentId: compartment.id,
+    compartmentId: projectFoundation.compartment.id,
     displayName: `${PROJECT}-route-table-private`,
     routeRules: [
       {
@@ -320,7 +239,7 @@ const privateRouteTable = new oci.core.RouteTable(
 const publicRouteTable = new oci.core.RouteTable(
   "public",
   {
-    compartmentId: compartment.id,
+    compartmentId: projectFoundation.compartment.id,
     displayName: `${PROJECT}-route-table-public`,
     routeRules: [
       {
@@ -339,7 +258,7 @@ const privateSubnet = new oci.core.Subnet(
   "private",
   {
     cidrBlock: "10.0.10.0/24",
-    compartmentId: compartment.id,
+    compartmentId: projectFoundation.compartment.id,
     displayName: `${PROJECT}-subnet-private`,
     dnsLabel: "private",
     prohibitPublicIpOnVnic: true,
@@ -352,7 +271,7 @@ const publicSubnet = new oci.core.Subnet(
   "public",
   {
     cidrBlock: "10.0.1.0/24",
-    compartmentId: compartment.id,
+    compartmentId: projectFoundation.compartment.id,
     displayName: `${PROJECT}-subnet-public`,
     dnsLabel: "public",
     prohibitPublicIpOnVnic: false,
@@ -365,7 +284,7 @@ const publicSubnet = new oci.core.Subnet(
 const networkLoadBalancer = new oci.networkloadbalancer.NetworkLoadBalancer(
   "main",
   {
-    compartmentId: compartment.id,
+    compartmentId: projectFoundation.compartment.id,
     displayName: `${PROJECT}-network-load-balancer`,
     isPrivate: false,
     networkSecurityGroupIds: [loadBalancerNetworkSecurityGroup.id],
@@ -398,7 +317,7 @@ const aclDocument = privateSubnet.cidrBlock.apply((cidr) =>
 const acl = new tailscale.Acl("main", { acl: aclDocument }, { protect: true });
 const existingCoolifyInstanceId = oci.core
   .getInstancesOutput({
-    compartmentId: compartment.id,
+    compartmentId: projectFoundation.compartment.id,
     displayName: `${PROJECT}-instance-main`,
     state: "RUNNING",
   })
