@@ -1,4 +1,5 @@
 import { PROJECT, TENANCY_OCID } from "@/config";
+import { setUpNetwork } from "@/set-up-network";
 import { setUpProjectFoundation } from "@/set-up-project-foundation";
 import * as cloudflare from "@pulumi/cloudflare";
 import * as oci from "@pulumi/oci";
@@ -10,15 +11,6 @@ const TAILSCALE_TAG = "tag:main";
 const cloudflareIpv4Cidrs = cloudflare
   .getIpRanges()
   .then(({ ipv4Cidrs }) => ipv4Cidrs);
-const ociServices = oci.core.getServicesOutput({
-  filters: [
-    {
-      name: "name",
-      regex: true,
-      values: ["All .* Services In Oracle Services Network"],
-    },
-  ],
-}).services;
 const availabilityDomains = oci.identity.getAvailabilityDomainsOutput({
   compartmentId: TENANCY_OCID,
 }).availabilityDomains;
@@ -32,6 +24,8 @@ const cloudflareAccount = {
 };
 
 const projectFoundation = setUpProjectFoundation();
+
+const network = setUpNetwork({ compartment: projectFoundation.compartment });
 const zone = new cloudflare.Zone(
   "main",
   { account: cloudflareAccount, name: DOMAIN_NAME },
@@ -44,25 +38,6 @@ const containerRepository = new oci.artifacts.ContainerRepository(
     compartmentId: projectFoundation.compartment.id,
     displayName: `${PROJECT}-repository-application`,
     isPublic: true,
-  },
-  { protect: true },
-);
-const publicIp = new oci.core.PublicIp(
-  "main",
-  {
-    compartmentId: projectFoundation.compartment.id,
-    displayName: `${PROJECT}-public-ip`,
-    lifetime: "RESERVED",
-  },
-  { ignoreChanges: ["privateIpId"], protect: true },
-);
-const vcn = new oci.core.Vcn(
-  "main",
-  {
-    cidrBlocks: ["10.0.0.0/16"],
-    compartmentId: projectFoundation.compartment.id,
-    displayName: `${PROJECT}-vcn`,
-    dnsLabel: PROJECT,
   },
   { protect: true },
 );
@@ -80,7 +55,7 @@ const volume = new oci.core.Volume(
 const apiDevRecord = new cloudflare.DnsRecord(
   "api-dev",
   {
-    content: publicIp.ipAddress,
+    content: network.publicIp.ipAddress,
     name: `dev-api.${DOMAIN_NAME}`,
     proxied: true,
     ttl: 1,
@@ -92,7 +67,7 @@ const apiDevRecord = new cloudflare.DnsRecord(
 const apiMainRecord = new cloudflare.DnsRecord(
   "api-main",
   {
-    content: publicIp.ipAddress,
+    content: network.publicIp.ipAddress,
     name: `api.${DOMAIN_NAME}`,
     proxied: true,
     ttl: 1,
@@ -101,21 +76,12 @@ const apiMainRecord = new cloudflare.DnsRecord(
   },
   { protect: true },
 );
-const internetGateway = new oci.core.InternetGateway(
-  "main",
-  {
-    compartmentId: projectFoundation.compartment.id,
-    displayName: `${PROJECT}-internet-gateway`,
-    vcnId: vcn.id,
-  },
-  { protect: true },
-);
 const loadBalancerNetworkSecurityGroup = new oci.core.NetworkSecurityGroup(
   "load-balancer",
   {
     compartmentId: projectFoundation.compartment.id,
     displayName: `${PROJECT}-network-security-group-load-balancer`,
-    vcnId: vcn.id,
+    vcnId: network.vcn.id,
   },
   { protect: true },
 );
@@ -124,16 +90,7 @@ const mainNetworkSecurityGroup = new oci.core.NetworkSecurityGroup(
   {
     compartmentId: projectFoundation.compartment.id,
     displayName: `${PROJECT}-network-security-group-main`,
-    vcnId: vcn.id,
-  },
-  { protect: true },
-);
-const natGateway = new oci.core.NatGateway(
-  "main",
-  {
-    compartmentId: projectFoundation.compartment.id,
-    displayName: `${PROJECT}-nat-gateway`,
-    vcnId: vcn.id,
+    vcnId: network.vcn.id,
   },
   { protect: true },
 );
@@ -145,20 +102,6 @@ const secureMode = new cloudflare.ZoneSetting(
 const securityLevel = new cloudflare.ZoneSetting(
   "security-level",
   { settingId: "security_level", value: "medium", zoneId: zone.id },
-  { protect: true },
-);
-const serviceGateway = new oci.core.ServiceGateway(
-  "main",
-  {
-    compartmentId: projectFoundation.compartment.id,
-    displayName: `${PROJECT}-service-gateway`,
-    services: ociServices.apply((services) => {
-      const service = services[0];
-      if (!service) throw new Error("OCI service is required");
-      return [{ serviceId: service.id }];
-    }),
-    vcnId: vcn.id,
-  },
   { protect: true },
 );
 const sslMode = new cloudflare.ZoneSetting(
@@ -209,77 +152,6 @@ const httpsMainFromLoadBalancerRule =
     },
     { protect: true },
   );
-const privateRouteTable = new oci.core.RouteTable(
-  "private",
-  {
-    compartmentId: projectFoundation.compartment.id,
-    displayName: `${PROJECT}-route-table-private`,
-    routeRules: [
-      {
-        destination: "0.0.0.0/0",
-        destinationType: "CIDR_BLOCK",
-        networkEntityId: natGateway.id,
-        routeType: "STATIC",
-      },
-      {
-        destination: ociServices.apply((services) => {
-          const service = services[0];
-          if (!service) throw new Error("OCI service is required");
-          return service.cidrBlock;
-        }),
-        destinationType: "SERVICE_CIDR_BLOCK",
-        networkEntityId: serviceGateway.id,
-        routeType: "STATIC",
-      },
-    ],
-    vcnId: vcn.id,
-  },
-  { protect: true },
-);
-const publicRouteTable = new oci.core.RouteTable(
-  "public",
-  {
-    compartmentId: projectFoundation.compartment.id,
-    displayName: `${PROJECT}-route-table-public`,
-    routeRules: [
-      {
-        destination: "0.0.0.0/0",
-        destinationType: "CIDR_BLOCK",
-        networkEntityId: internetGateway.id,
-        routeType: "STATIC",
-      },
-    ],
-    vcnId: vcn.id,
-  },
-  { protect: true },
-);
-
-const privateSubnet = new oci.core.Subnet(
-  "private",
-  {
-    cidrBlock: "10.0.10.0/24",
-    compartmentId: projectFoundation.compartment.id,
-    displayName: `${PROJECT}-subnet-private`,
-    dnsLabel: "private",
-    prohibitPublicIpOnVnic: true,
-    routeTableId: privateRouteTable.id,
-    vcnId: vcn.id,
-  },
-  { protect: true },
-);
-const publicSubnet = new oci.core.Subnet(
-  "public",
-  {
-    cidrBlock: "10.0.1.0/24",
-    compartmentId: projectFoundation.compartment.id,
-    displayName: `${PROJECT}-subnet-public`,
-    dnsLabel: "public",
-    prohibitPublicIpOnVnic: false,
-    routeTableId: publicRouteTable.id,
-    vcnId: vcn.id,
-  },
-  { protect: true },
-);
 
 const networkLoadBalancer = new oci.networkloadbalancer.NetworkLoadBalancer(
   "main",
@@ -288,12 +160,12 @@ const networkLoadBalancer = new oci.networkloadbalancer.NetworkLoadBalancer(
     displayName: `${PROJECT}-network-load-balancer`,
     isPrivate: false,
     networkSecurityGroupIds: [loadBalancerNetworkSecurityGroup.id],
-    reservedIps: [{ id: publicIp.id }],
-    subnetId: publicSubnet.id,
+    reservedIps: [{ id: network.publicIp.id }],
+    subnetId: network.publicSubnet.id,
   },
   { protect: true },
 );
-const aclDocument = privateSubnet.cidrBlock.apply((cidr) =>
+const aclDocument = network.privateSubnet.cidrBlock.apply((cidr) =>
   JSON.stringify({
     acls: [
       {
