@@ -1,7 +1,7 @@
 import { EMAIL, PROJECT, TENANCY_OCID } from "@/config";
 import * as oci from "@pulumi/oci";
 
-export function setUpProjectFoundation() {
+export function setUpFoundation() {
   const budget = new oci.budget.Budget(
     "main",
     {

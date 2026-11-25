@@ -1,6 +1,6 @@
 import { PROJECT, TENANCY_OCID } from "@/config";
 import { setUpNetwork } from "@/set-up-network";
-import { setUpProjectFoundation } from "@/set-up-project-foundation";
+import { setUpFoundation } from "@/set-up-foundation";
 import * as cloudflare from "@pulumi/cloudflare";
 import * as oci from "@pulumi/oci";
 import * as tailscale from "@pulumi/tailscale";
@@ -23,9 +23,9 @@ const cloudflareAccount = {
   id: cloudflare.getZoneOutput({ filter: { name: DOMAIN_NAME } }).account.id,
 };
 
-const projectFoundation = setUpProjectFoundation();
+const foundation = setUpFoundation();
 
-const network = setUpNetwork({ compartment: projectFoundation.compartment });
+const network = setUpNetwork({ compartment: foundation.compartment });
 const zone = new cloudflare.Zone(
   "main",
   { account: cloudflareAccount, name: DOMAIN_NAME },
@@ -35,7 +35,7 @@ const zone = new cloudflare.Zone(
 const containerRepository = new oci.artifacts.ContainerRepository(
   "application",
   {
-    compartmentId: projectFoundation.compartment.id,
+    compartmentId: foundation.compartment.id,
     displayName: `${PROJECT}-repository-application`,
     isPublic: true,
   },
@@ -45,7 +45,7 @@ const volume = new oci.core.Volume(
   "main",
   {
     availabilityDomain,
-    compartmentId: projectFoundation.compartment.id,
+    compartmentId: foundation.compartment.id,
     displayName: `${PROJECT}-volume-main`,
     sizeInGbs: "50",
   },
@@ -79,7 +79,7 @@ const apiMainRecord = new cloudflare.DnsRecord(
 const loadBalancerNetworkSecurityGroup = new oci.core.NetworkSecurityGroup(
   "load-balancer",
   {
-    compartmentId: projectFoundation.compartment.id,
+    compartmentId: foundation.compartment.id,
     displayName: `${PROJECT}-network-security-group-load-balancer`,
     vcnId: network.vcn.id,
   },
@@ -88,7 +88,7 @@ const loadBalancerNetworkSecurityGroup = new oci.core.NetworkSecurityGroup(
 const mainNetworkSecurityGroup = new oci.core.NetworkSecurityGroup(
   "main",
   {
-    compartmentId: projectFoundation.compartment.id,
+    compartmentId: foundation.compartment.id,
     displayName: `${PROJECT}-network-security-group-main`,
     vcnId: network.vcn.id,
   },
@@ -156,7 +156,7 @@ const httpsMainFromLoadBalancerRule =
 const networkLoadBalancer = new oci.networkloadbalancer.NetworkLoadBalancer(
   "main",
   {
-    compartmentId: projectFoundation.compartment.id,
+    compartmentId: foundation.compartment.id,
     displayName: `${PROJECT}-network-load-balancer`,
     isPrivate: false,
     networkSecurityGroupIds: [loadBalancerNetworkSecurityGroup.id],
@@ -189,7 +189,7 @@ const aclDocument = network.privateSubnet.cidrBlock.apply((cidr) =>
 const acl = new tailscale.Acl("main", { acl: aclDocument }, { protect: true });
 const existingCoolifyInstanceId = oci.core
   .getInstancesOutput({
-    compartmentId: projectFoundation.compartment.id,
+    compartmentId: foundation.compartment.id,
     displayName: `${PROJECT}-instance-main`,
     state: "RUNNING",
   })
