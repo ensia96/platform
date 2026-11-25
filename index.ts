@@ -2,11 +2,9 @@ import { PROJECT, TENANCY_OCID } from "@/config";
 import { setUpCompute } from "@/set-up-compute";
 import { setUpNetwork } from "@/set-up-network";
 import { setUpFoundation } from "@/set-up-foundation";
+import { setUpPrivateAccess } from "@/set-up-private-access";
 import { setUpPublicIngress } from "@/set-up-public-ingress";
 import * as oci from "@pulumi/oci";
-import * as tailscale from "@pulumi/tailscale";
-
-const TAILSCALE_TAG = "tag:main";
 
 const availabilityDomains = oci.identity.getAvailabilityDomainsOutput({
   compartmentId: TENANCY_OCID,
@@ -22,6 +20,7 @@ const foundation = setUpFoundation();
 const compute = setUpCompute({ compartment: foundation.compartment });
 const network = setUpNetwork({ compartment: foundation.compartment });
 
+setUpPrivateAccess({ privateSubnet: network.privateSubnet });
 setUpPublicIngress({
   compartment: foundation.compartment,
   mainInstance: compute.mainInstance,
@@ -49,26 +48,3 @@ const volume = new oci.core.Volume(
   },
   { protect: true },
 );
-
-const aclDocument = network.privateSubnet.cidrBlock.apply((cidr) =>
-  JSON.stringify({
-    acls: [
-      {
-        action: "accept",
-        dst: ["*:*"],
-        src: ["*"],
-      },
-    ],
-    autoApprovers: { routes: { [cidr]: [TAILSCALE_TAG] } },
-    ssh: [
-      {
-        action: "accept",
-        dst: ["autogroup:self", TAILSCALE_TAG],
-        src: ["autogroup:member"],
-        users: ["autogroup:nonroot"],
-      },
-    ],
-    tagOwners: { [TAILSCALE_TAG]: ["autogroup:member"] },
-  }),
-);
-const acl = new tailscale.Acl("main", { acl: aclDocument }, { protect: true });
