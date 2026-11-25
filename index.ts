@@ -1,4 +1,5 @@
 import { PROJECT, TENANCY_OCID } from "@/config";
+import { setUpCompute } from "@/set-up-compute";
 import { setUpNetwork } from "@/set-up-network";
 import { setUpFoundation } from "@/set-up-foundation";
 import * as cloudflare from "@pulumi/cloudflare";
@@ -25,6 +26,7 @@ const cloudflareAccount = {
 
 const foundation = setUpFoundation();
 
+const compute = setUpCompute({ compartment: foundation.compartment });
 const network = setUpNetwork({ compartment: foundation.compartment });
 const zone = new cloudflare.Zone(
   "main",
@@ -187,18 +189,6 @@ const aclDocument = network.privateSubnet.cidrBlock.apply((cidr) =>
   }),
 );
 const acl = new tailscale.Acl("main", { acl: aclDocument }, { protect: true });
-const existingCoolifyInstanceId = oci.core
-  .getInstancesOutput({
-    compartmentId: foundation.compartment.id,
-    displayName: `${PROJECT}-instance-main`,
-    state: "RUNNING",
-  })
-  .instances.apply((instances) => {
-    if (instances.length !== 1) {
-      throw new Error("exactly one running legacy OCI instance is required");
-    }
-    return instances[0].id;
-  });
 
 const httpsBackendSet = new oci.networkloadbalancer.BackendSet(
   "https",
@@ -228,7 +218,7 @@ const httpsBackend = new oci.networkloadbalancer.Backend(
     backendSetName: httpsBackendSet.name,
     networkLoadBalancerId: networkLoadBalancer.id,
     port: 443,
-    targetId: existingCoolifyInstanceId,
+    targetId: compute.mainInstance.id,
   },
   { protect: true },
 );
