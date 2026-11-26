@@ -2,17 +2,13 @@ import { EMAIL, PROJECT, TENANCY_OCID } from "@/config";
 import * as oci from "@pulumi/oci";
 
 export function setUpFoundation() {
-  const budget = new oci.budget.Budget(
-    "main",
-    {
-      amount: 1,
-      compartmentId: TENANCY_OCID,
-      resetPeriod: "MONTHLY",
-      targets: [TENANCY_OCID],
-      targetType: "COMPARTMENT",
-    },
-    { protect: true },
-  );
+  const budget = new oci.budget.Budget("main", {
+    amount: 1,
+    compartmentId: TENANCY_OCID,
+    resetPeriod: "MONTHLY",
+    targets: [TENANCY_OCID],
+    targetType: "COMPARTMENT",
+  });
   const compartment = new oci.identity.Compartment(
     "main",
     { compartmentId: TENANCY_OCID, description: PROJECT, name: PROJECT },
@@ -55,17 +51,13 @@ export function setUpFoundation() {
     },
     { protect: true },
   );
-  const budgetAlert = new oci.budget.Rule(
-    "main",
-    {
-      budgetId: budget.id,
-      recipients: EMAIL,
-      threshold: 1,
-      thresholdType: "PERCENTAGE",
-      type: "FORECAST",
-    },
-    { protect: true },
-  );
+  const budgetAlert = new oci.budget.Rule("main", {
+    budgetId: budget.id,
+    recipients: EMAIL,
+    threshold: 1,
+    thresholdType: "PERCENTAGE",
+    type: "FORECAST",
+  });
   const managerMembership = new oci.identity.UserGroupMembership(
     "manager",
     { groupId: managers.id, userId: manager.id },

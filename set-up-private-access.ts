@@ -23,11 +23,7 @@ export function setUpPrivateAccess({ privateSubnet }: SetUpPrivateAccessArgs) {
     }),
   );
 
-  const acl = new tailscale.Acl(
-    "main",
-    { acl: aclDocument },
-    { protect: true },
-  );
+  const acl = new tailscale.Acl("main", { acl: aclDocument });
 
   return { acl };
 }

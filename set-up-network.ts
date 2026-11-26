@@ -35,83 +35,63 @@ export function setUpNetwork({ compartment }: SetUpNetworkArgs) {
     { protect: true },
   );
 
-  const internetGateway = new oci.core.InternetGateway(
-    "main",
-    {
-      compartmentId: compartment.id,
-      displayName: `${PROJECT}-internet-gateway`,
-      vcnId: vcn.id,
-    },
-    { protect: true },
-  );
-  const natGateway = new oci.core.NatGateway(
-    "main",
-    {
-      compartmentId: compartment.id,
-      displayName: `${PROJECT}-nat-gateway`,
-      vcnId: vcn.id,
-    },
-    { protect: true },
-  );
-  const serviceGateway = new oci.core.ServiceGateway(
-    "main",
-    {
-      compartmentId: compartment.id,
-      displayName: `${PROJECT}-service-gateway`,
-      services: ociServices.apply((services) => {
-        const service = services[0];
-        if (!service) throw new Error("OCI service is required");
-        return [{ serviceId: service.id }];
-      }),
-      vcnId: vcn.id,
-    },
-    { protect: true },
-  );
+  const internetGateway = new oci.core.InternetGateway("main", {
+    compartmentId: compartment.id,
+    displayName: `${PROJECT}-internet-gateway`,
+    vcnId: vcn.id,
+  });
+  const natGateway = new oci.core.NatGateway("main", {
+    compartmentId: compartment.id,
+    displayName: `${PROJECT}-nat-gateway`,
+    vcnId: vcn.id,
+  });
+  const serviceGateway = new oci.core.ServiceGateway("main", {
+    compartmentId: compartment.id,
+    displayName: `${PROJECT}-service-gateway`,
+    services: ociServices.apply((services) => {
+      const service = services[0];
+      if (!service) throw new Error("OCI service is required");
+      return [{ serviceId: service.id }];
+    }),
+    vcnId: vcn.id,
+  });
 
-  const privateRouteTable = new oci.core.RouteTable(
-    "private",
-    {
-      compartmentId: compartment.id,
-      displayName: `${PROJECT}-route-table-private`,
-      routeRules: [
-        {
-          destination: "0.0.0.0/0",
-          destinationType: "CIDR_BLOCK",
-          networkEntityId: natGateway.id,
-          routeType: "STATIC",
-        },
-        {
-          destination: ociServices.apply((services) => {
-            const service = services[0];
-            if (!service) throw new Error("OCI service is required");
-            return service.cidrBlock;
-          }),
-          destinationType: "SERVICE_CIDR_BLOCK",
-          networkEntityId: serviceGateway.id,
-          routeType: "STATIC",
-        },
-      ],
-      vcnId: vcn.id,
-    },
-    { protect: true },
-  );
-  const publicRouteTable = new oci.core.RouteTable(
-    "public",
-    {
-      compartmentId: compartment.id,
-      displayName: `${PROJECT}-route-table-public`,
-      routeRules: [
-        {
-          destination: "0.0.0.0/0",
-          destinationType: "CIDR_BLOCK",
-          networkEntityId: internetGateway.id,
-          routeType: "STATIC",
-        },
-      ],
-      vcnId: vcn.id,
-    },
-    { protect: true },
-  );
+  const privateRouteTable = new oci.core.RouteTable("private", {
+    compartmentId: compartment.id,
+    displayName: `${PROJECT}-route-table-private`,
+    routeRules: [
+      {
+        destination: "0.0.0.0/0",
+        destinationType: "CIDR_BLOCK",
+        networkEntityId: natGateway.id,
+        routeType: "STATIC",
+      },
+      {
+        destination: ociServices.apply((services) => {
+          const service = services[0];
+          if (!service) throw new Error("OCI service is required");
+          return service.cidrBlock;
+        }),
+        destinationType: "SERVICE_CIDR_BLOCK",
+        networkEntityId: serviceGateway.id,
+        routeType: "STATIC",
+      },
+    ],
+    vcnId: vcn.id,
+  });
+  const publicRouteTable = new oci.core.RouteTable("public", {
+    compartmentId: compartment.id,
+    displayName: `${PROJECT}-route-table-public`,
+    routeRules: [
+      {
+        destination: "0.0.0.0/0",
+        destinationType: "CIDR_BLOCK",
+        networkEntityId: internetGateway.id,
+        routeType: "STATIC",
+      },
+    ],
+    vcnId: vcn.id,
+  });
 
   const privateSubnet = new oci.core.Subnet(
     "private",

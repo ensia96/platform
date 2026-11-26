@@ -31,7 +31,6 @@ export function setUpPublicIngress({
       displayName: `${PROJECT}-network-security-group-load-balancer`,
       vcnId: vcn.id,
     },
-    { protect: true },
   );
   const mainNetworkSecurityGroup = new oci.core.NetworkSecurityGroup(
     "main",
@@ -59,7 +58,6 @@ export function setUpPublicIngress({
                 sourceType: "CIDR_BLOCK",
                 tcpOptions: { destinationPortRange: { max: 443, min: 443 } },
               },
-              { protect: true },
             ),
         ),
   );
@@ -74,7 +72,6 @@ export function setUpPublicIngress({
         sourceType: "NETWORK_SECURITY_GROUP",
         tcpOptions: { destinationPortRange: { max: 443, min: 443 } },
       },
-      { protect: true },
     );
   const networkLoadBalancer = new oci.networkloadbalancer.NetworkLoadBalancer(
     "main",
@@ -86,7 +83,6 @@ export function setUpPublicIngress({
       reservedIps: [{ id: publicIp.id }],
       subnetId: publicSubnet.id,
     },
-    { protect: true },
   );
   const zone = new cloudflare.Zone(
     "main",
@@ -94,88 +90,68 @@ export function setUpPublicIngress({
     { protect: true },
   );
 
-  const apiDevRecord = new cloudflare.DnsRecord(
-    "api-dev",
-    {
-      content: publicIp.ipAddress,
-      name: `dev-api.${DOMAIN_NAME}`,
-      proxied: true,
-      ttl: 1,
-      type: "A",
-      zoneId: zone.id,
-    },
-    { protect: true },
-  );
-  const apiMainRecord = new cloudflare.DnsRecord(
-    "api-main",
-    {
-      content: publicIp.ipAddress,
-      name: `api.${DOMAIN_NAME}`,
-      proxied: true,
-      ttl: 1,
-      type: "A",
-      zoneId: zone.id,
-    },
-    { protect: true },
-  );
-  const httpsBackendSet = new oci.networkloadbalancer.BackendSet(
-    "https",
-    {
-      healthChecker: { protocol: "TCP" },
-      isPreserveSource: false,
-      name: "https",
-      networkLoadBalancerId: networkLoadBalancer.id,
-      policy: "FIVE_TUPLE",
-    },
-    { protect: true },
-  );
-  const secureMode = new cloudflare.ZoneSetting(
-    "secure-mode",
-    { settingId: "always_use_https", value: "on", zoneId: zone.id },
-    { protect: true },
-  );
-  const securityLevel = new cloudflare.ZoneSetting(
-    "security-level",
-    { settingId: "security_level", value: "medium", zoneId: zone.id },
-    { protect: true },
-  );
-  const sslMode = new cloudflare.ZoneSetting(
-    "ssl-mode",
-    { settingId: "ssl", value: "full", zoneId: zone.id },
-    { protect: true },
-  );
-  const tlsVersion = new cloudflare.ZoneSetting(
-    "tls-version",
-    { settingId: "min_tls_version", value: "1.2", zoneId: zone.id },
-    { protect: true },
-  );
-  const websocket = new cloudflare.ZoneSetting(
-    "websocket",
-    { settingId: "websockets", value: "on", zoneId: zone.id },
-    { protect: true },
-  );
+  const apiDevRecord = new cloudflare.DnsRecord("api-dev", {
+    content: publicIp.ipAddress,
+    name: `dev-api.${DOMAIN_NAME}`,
+    proxied: true,
+    ttl: 1,
+    type: "A",
+    zoneId: zone.id,
+  });
+  const apiMainRecord = new cloudflare.DnsRecord("api-main", {
+    content: publicIp.ipAddress,
+    name: `api.${DOMAIN_NAME}`,
+    proxied: true,
+    ttl: 1,
+    type: "A",
+    zoneId: zone.id,
+  });
+  const httpsBackendSet = new oci.networkloadbalancer.BackendSet("https", {
+    healthChecker: { protocol: "TCP" },
+    isPreserveSource: false,
+    name: "https",
+    networkLoadBalancerId: networkLoadBalancer.id,
+    policy: "FIVE_TUPLE",
+  });
+  const secureMode = new cloudflare.ZoneSetting("secure-mode", {
+    settingId: "always_use_https",
+    value: "on",
+    zoneId: zone.id,
+  });
+  const securityLevel = new cloudflare.ZoneSetting("security-level", {
+    settingId: "security_level",
+    value: "medium",
+    zoneId: zone.id,
+  });
+  const sslMode = new cloudflare.ZoneSetting("ssl-mode", {
+    settingId: "ssl",
+    value: "full",
+    zoneId: zone.id,
+  });
+  const tlsVersion = new cloudflare.ZoneSetting("tls-version", {
+    settingId: "min_tls_version",
+    value: "1.2",
+    zoneId: zone.id,
+  });
+  const websocket = new cloudflare.ZoneSetting("websocket", {
+    settingId: "websockets",
+    value: "on",
+    zoneId: zone.id,
+  });
 
-  const httpsBackend = new oci.networkloadbalancer.Backend(
-    "https",
-    {
-      backendSetName: httpsBackendSet.name,
-      networkLoadBalancerId: networkLoadBalancer.id,
-      port: 443,
-      targetId: mainInstance.id,
-    },
-    { protect: true },
-  );
-  const httpsListener = new oci.networkloadbalancer.Listener(
-    "https",
-    {
-      defaultBackendSetName: httpsBackendSet.name,
-      name: "https",
-      networkLoadBalancerId: networkLoadBalancer.id,
-      port: 443,
-      protocol: "TCP",
-    },
-    { protect: true },
-  );
+  const httpsBackend = new oci.networkloadbalancer.Backend("https", {
+    backendSetName: httpsBackendSet.name,
+    networkLoadBalancerId: networkLoadBalancer.id,
+    port: 443,
+    targetId: mainInstance.id,
+  });
+  const httpsListener = new oci.networkloadbalancer.Listener("https", {
+    defaultBackendSetName: httpsBackendSet.name,
+    name: "https",
+    networkLoadBalancerId: networkLoadBalancer.id,
+    port: 443,
+    protocol: "TCP",
+  });
 
   return {
     apiDevRecord,
