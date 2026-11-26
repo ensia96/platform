@@ -1,6 +1,7 @@
 import { PROJECT } from "@/config";
 import { env } from "@/lib";
 import * as oci from "@pulumi/oci";
+import { all } from "@pulumi/pulumi";
 
 type SetUpComputeArgs = {
   compartment: oci.identity.Compartment;
@@ -8,19 +9,15 @@ type SetUpComputeArgs = {
 
 export function setUpCompute({ compartment }: SetUpComputeArgs) {
   const importId = env("PULUMI_IMPORT_INSTANCE_ID");
-  if (!/^ocid1\.instance\.[^\s]+$/.test(importId))
-    throw new Error("PULUMI_IMPORT_INSTANCE_ID must be an instance OCID");
-
   const displayName = `${PROJECT}-instance-main`;
-  const existing = oci.core
-    .getInstancesOutput({
-      compartmentId: compartment.id,
-      displayName,
-      state: "RUNNING",
-    })
-    .instances.apply((matches) => {
-      const [vm] = matches;
-      if (matches.length !== 1 || vm.id !== importId)
+  const instance = oci.core.getInstanceOutput({ instanceId: importId });
+  const existing = all([instance, compartment.id]).apply(
+    ([vm, compartmentId]) => {
+      if (
+        vm.compartmentId !== compartmentId ||
+        vm.displayName !== displayName ||
+        vm.state !== "RUNNING"
+      )
         throw new Error("legacy instance import identity mismatch");
       const [source] = vm.sourceDetails;
       const [shape] = vm.shapeConfigs;
@@ -43,7 +40,8 @@ export function setUpCompute({ compartment }: SetUpComputeArgs) {
           sourceType: source.sourceType,
         },
       };
-    });
+    },
+  );
 
   const mainInstance = new oci.core.Instance(
     "main",
