@@ -13,14 +13,39 @@ permissions:
 
 jobs:
   provision:
+    # Temporary import gate: credentialed reads only on the trusted PR or main push.
+    if: >-
+      (github.event_name == 'pull_request' && github.base_ref == 'main' &&
+       github.head_ref == 'dev' && github.event.pull_request.head.repo.full_name == github.repository) ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v7
         with:
           node-version: 24
       - run: npm ci
       - uses: pulumi/actions@v7
+        with:
+          pulumi-version: 3.276.0
+      - name: Install OCI SDK for import check
+        run: |
+          python3 -m venv "$RUNNER_TEMP/oci-check"
+          "$RUNNER_TEMP/oci-check/bin/pip" --isolated install --index-url https://pypi.org/simple --only-binary=:all: 'oci==2.165.1'
+      - name: Verify legacy VM relationships
+        env:
+          OCI_FINGERPRINT: ${{ secrets.FINGERPRINT }}
+          OCI_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          OCI_REGION: ${{ secrets.REGION }}
+          OCI_TENANCY_OCID: ${{ secrets.TENANCY_OCID }}
+          OCI_USER_OCID: ${{ secrets.USER_OCID }}
+        run: |
+          test "${RUNNER_DEBUG:-0}" != 1
+          "$RUNNER_TEMP/oci-check/bin/python" -I .github/verify-legacy-vm.py
+      - name: Validate import-only preview before provisioning
+        shell: bash
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.STATE_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.STATE_SECRET_KEY }}
@@ -35,8 +60,29 @@ jobs:
           PULUMI_FALLBACK_TO_STATE_SECRETS_MANAGER: "true"
           TAILSCALE_OAUTH_CLIENT_ID: ${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}
           TAILSCALE_OAUTH_CLIENT_SECRET: ${{ secrets.TAILSCALE_OAUTH_CLIENT_SECRET }}
-        with:
-          command: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'up' || 'preview' }}
-          stack-name: main
-          pulumi-version: 3.276.0
-          upsert: true
+        run: |
+          set -euo pipefail
+          : "${PULUMI_IMPORT_INSTANCE_ID:?verified instance required}"
+          umask 077
+          tmp="$(mktemp -d "$RUNNER_TEMP/import-plan.XXXXXX")"
+          trap 'rm -rf -- "$tmp"' EXIT
+          plan=()
+          if [[ "$GITHUB_EVENT_NAME" == push && "$GITHUB_REF" == refs/heads/main ]]; then
+            plan=(--save-plan "$tmp/plan.json")
+          fi
+          if ! pulumi preview --stack main --non-interactive --json --suppress-outputs "${plan[@]}" 2>/dev/null |
+            jq -es --arg urn 'urn:pulumi:main::platform::oci:Core/instance:Instance::main' '
+              length == 1 and (.[0] |
+                .changeSummary.import == 1 and .changeSummary.same == 52 and
+                all(.changeSummary | to_entries[]; .key == "import" or .key == "same" or .value == 0) and
+                [.steps[] | select(.op != "same") | {op, urn}] == [{op:"import", urn:$urn}] and
+                all(.diagnostics[]?; .severity != "error"))
+            ' >/dev/null 2>&1; then
+            echo 'Preview failed or was not the expected VM-only import; raw details withheld.'
+            exit 1
+          fi
+          echo 'Preview verified: 1 VM import, 52 unchanged, no other operations.'
+          if [[ "$GITHUB_EVENT_NAME" == push && "$GITHUB_REF" == refs/heads/main ]]; then
+            pulumi up --stack main --non-interactive --yes --skip-preview --plan "$tmp/plan.json" --suppress-outputs >/dev/null 2>&1
+            echo 'Verified import plan applied.'
+          fi
