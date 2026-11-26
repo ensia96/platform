@@ -1,24 +1,22 @@
 import { PROJECT } from "@/config";
-import { env } from "@/lib";
 import * as oci from "@pulumi/oci";
-import { all } from "@pulumi/pulumi";
 
 type SetUpComputeArgs = {
   compartment: oci.identity.Compartment;
 };
 
 export function setUpCompute({ compartment }: SetUpComputeArgs) {
-  const importId = env("PULUMI_IMPORT_INSTANCE_ID");
   const displayName = `${PROJECT}-instance-main`;
-  const instance = oci.core.getInstanceOutput({ instanceId: importId });
-  const existing = all([instance, compartment.id]).apply(
-    ([vm, compartmentId]) => {
-      if (
-        vm.compartmentId !== compartmentId ||
-        vm.displayName !== displayName ||
-        vm.state !== "RUNNING"
-      )
-        throw new Error("legacy instance import identity mismatch");
+  const existing = oci.core
+    .getInstancesOutput({
+      compartmentId: compartment.id,
+      displayName,
+      state: "RUNNING",
+    })
+    .instances.apply((instances) => {
+      if (instances.length !== 1)
+        throw new Error("exactly one running legacy OCI instance is required");
+      const [vm] = instances;
       const [source] = vm.sourceDetails;
       const [shape] = vm.shapeConfigs;
       if (
@@ -40,8 +38,7 @@ export function setUpCompute({ compartment }: SetUpComputeArgs) {
           sourceType: source.sourceType,
         },
       };
-    },
-  );
+    });
 
   const mainInstance = new oci.core.Instance(
     "main",
@@ -56,7 +53,6 @@ export function setUpCompute({ compartment }: SetUpComputeArgs) {
     {
       additionalSecretOutputs: ["metadata", "extendedMetadata"],
       ignoreChanges: ["metadata"],
-      import: importId,
     },
   );
 
