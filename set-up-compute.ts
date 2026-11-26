@@ -57,7 +57,6 @@ export function setUpCompute({ compartment }: SetUpComputeArgs) {
       additionalSecretOutputs: ["metadata", "extendedMetadata"],
       ignoreChanges: ["metadata"],
       import: importId,
-      protect: true,
     },
   );
 
