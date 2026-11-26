@@ -1,11 +1,10 @@
 import { DOMAIN_NAME, PROJECT } from "@/config";
 import * as cloudflare from "@pulumi/cloudflare";
 import * as oci from "@pulumi/oci";
-import { Output } from "@pulumi/pulumi";
 
 type SetUpPublicIngressArgs = {
   compartment: oci.identity.Compartment;
-  mainInstance: Output<oci.core.GetInstancesResult["instances"][number]>;
+  mainInstance: oci.core.Instance;
   publicIp: oci.core.PublicIp;
   publicSubnet: oci.core.Subnet;
   vcn: oci.core.Vcn;
