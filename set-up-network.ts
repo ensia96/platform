@@ -40,6 +40,15 @@ export function setUpNetwork({ compartment }: SetUpNetworkArgs) {
     displayName: `${PROJECT}-internet-gateway`,
     vcnId: vcn.id,
   });
+  const mainNetworkSecurityGroup = new oci.core.NetworkSecurityGroup(
+    "main",
+    {
+      compartmentId: compartment.id,
+      displayName: `${PROJECT}-network-security-group-main`,
+      vcnId: vcn.id,
+    },
+    { protect: true },
+  );
   const natGateway = new oci.core.NatGateway("main", {
     compartmentId: compartment.id,
     displayName: `${PROJECT}-nat-gateway`,
@@ -122,6 +131,7 @@ export function setUpNetwork({ compartment }: SetUpNetworkArgs) {
 
   return {
     internetGateway,
+    mainNetworkSecurityGroup,
     natGateway,
     privateRouteTable,
     privateSubnet,
