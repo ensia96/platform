@@ -26,10 +26,10 @@ export function setUpStorage({ compartment }: SetUpStorageArgs) {
           return domain.name;
         }),
       compartmentId: compartment.id,
-      displayName: `${PROJECT}-volume-main`,
+      displayName: `${PROJECT}-volume-database`,
       sizeInGbs: "50",
     },
-    { protect: true },
+    { deleteBeforeReplace: true, replaceOnChanges: ["displayName"] },
   );
 
   return { containerRepository, volume };

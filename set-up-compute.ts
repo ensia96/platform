@@ -49,7 +49,7 @@ export function setUpCompute({
       launchVolumeAttachments: [
         {
           device: "/dev/oracleoci/oraclevdb",
-          isReadOnly: true,
+          isReadOnly: false,
           type: "paravirtualized",
           volumeId: volume.id,
         },
