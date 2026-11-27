@@ -5,6 +5,7 @@ import * as oci from "@pulumi/oci";
 type SetUpPublicIngressArgs = {
   compartment: oci.identity.Compartment;
   mainInstance: oci.core.Instance;
+  mainNetworkSecurityGroup: oci.core.NetworkSecurityGroup;
   publicIp: oci.core.PublicIp;
   publicSubnet: oci.core.Subnet;
   vcn: oci.core.Vcn;
@@ -13,6 +14,7 @@ type SetUpPublicIngressArgs = {
 export function setUpPublicIngress({
   compartment,
   mainInstance,
+  mainNetworkSecurityGroup,
   publicIp,
   publicSubnet,
   vcn,
@@ -30,15 +32,6 @@ export function setUpPublicIngress({
       displayName: `${PROJECT}-network-security-group-load-balancer`,
       vcnId: vcn.id,
     },
-  );
-  const mainNetworkSecurityGroup = new oci.core.NetworkSecurityGroup(
-    "main",
-    {
-      compartmentId: compartment.id,
-      displayName: `${PROJECT}-network-security-group-main`,
-      vcnId: vcn.id,
-    },
-    { protect: true },
   );
 
   const httpsLoadBalancerFromCloudflareRules = cloudflareIpv4Cidrs.then(
@@ -161,7 +154,6 @@ export function setUpPublicIngress({
     httpsLoadBalancerFromCloudflareRules,
     httpsMainFromLoadBalancerRule,
     loadBalancerNetworkSecurityGroup,
-    mainNetworkSecurityGroup,
     networkLoadBalancer,
     secureMode,
     securityLevel,

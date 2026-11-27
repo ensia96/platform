@@ -7,14 +7,21 @@ import { setUpStorage } from "@/set-up-storage";
 
 const foundation = setUpFoundation();
 
-const compute = setUpCompute({ compartment: foundation.compartment });
 const network = setUpNetwork({ compartment: foundation.compartment });
-setUpStorage({ compartment: foundation.compartment });
+const storage = setUpStorage({ compartment: foundation.compartment });
 
+const compute = setUpCompute({
+  compartment: foundation.compartment,
+  mainNetworkSecurityGroup: network.mainNetworkSecurityGroup,
+  privateSubnet: network.privateSubnet,
+  volume: storage.volume,
+});
 setUpPrivateAccess({ privateSubnet: network.privateSubnet });
+
 setUpPublicIngress({
   compartment: foundation.compartment,
   mainInstance: compute.mainInstance,
+  mainNetworkSecurityGroup: network.mainNetworkSecurityGroup,
   publicIp: network.publicIp,
   publicSubnet: network.publicSubnet,
   vcn: network.vcn,

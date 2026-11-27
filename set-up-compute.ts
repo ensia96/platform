@@ -1,62 +1,67 @@
 import { PROJECT } from "@/config";
-import { env } from "@/lib";
 import * as oci from "@pulumi/oci";
-import { all } from "@pulumi/pulumi";
+
+const IMAGE_NAME = "Canonical-Ubuntu-24.04-aarch64-2026.09.18-0";
+const SHAPE = "VM.Standard.A1.Flex";
 
 type SetUpComputeArgs = {
   compartment: oci.identity.Compartment;
+  mainNetworkSecurityGroup: oci.core.NetworkSecurityGroup;
+  privateSubnet: oci.core.Subnet;
+  volume: oci.core.Volume;
 };
 
-export function setUpCompute({ compartment }: SetUpComputeArgs) {
-  const importId = env("PULUMI_IMPORT_INSTANCE_ID");
-  const displayName = `${PROJECT}-instance-main`;
-  const instance = oci.core.getInstanceOutput({ instanceId: importId });
-  const existing = all([instance, compartment.id]).apply(
-    ([vm, compartmentId]) => {
-      if (
-        vm.compartmentId !== compartmentId ||
-        vm.displayName !== displayName ||
-        vm.state !== "RUNNING"
-      )
-        throw new Error("legacy instance import identity mismatch");
-      const [source] = vm.sourceDetails;
-      const [shape] = vm.shapeConfigs;
-      if (
-        !vm.availabilityDomain ||
-        !vm.shape ||
-        !shape ||
-        source?.sourceType !== "image" ||
-        !source.sourceId
-      )
-        throw new Error(
-          "legacy instance placement, shape and source image are required",
-        );
-      return {
-        availabilityDomain: vm.availabilityDomain,
-        shape: vm.shape,
-        shapeConfig: { memoryInGbs: shape.memoryInGbs, ocpus: shape.ocpus },
-        sourceDetails: {
-          sourceId: source.sourceId,
-          sourceType: source.sourceType,
-        },
-      };
-    },
-  );
+export function setUpCompute({
+  compartment,
+  mainNetworkSecurityGroup,
+  privateSubnet,
+  volume,
+}: SetUpComputeArgs) {
+  const imageId = oci.core
+    .getImagesOutput({
+      compartmentId: compartment.id,
+      displayName: IMAGE_NAME,
+      shape: SHAPE,
+      state: "AVAILABLE",
+    })
+    .images.apply((images) => {
+      if (images.length !== 1)
+        throw new Error(`Expected one image: ${IMAGE_NAME}`);
+      return images[0].id;
+    });
 
   const mainInstance = new oci.core.Instance(
     "main",
     {
-      availabilityDomain: existing.availabilityDomain,
+      availabilityDomain: volume.availabilityDomain,
       compartmentId: compartment.id,
-      displayName,
-      shape: existing.shape,
-      shapeConfig: existing.shapeConfig,
-      sourceDetails: existing.sourceDetails,
+      createVnicDetails: {
+        assignPublicIp: "false",
+        displayName: `${PROJECT}-virtual-network-interface-card-main`,
+        nsgIds: [mainNetworkSecurityGroup.id],
+        subnetId: privateSubnet.id,
+      },
+      displayName: `${PROJECT}-instance-dokploy`,
+      launchOptions: {
+        isConsistentVolumeNamingEnabled: true,
+        networkType: "PARAVIRTUALIZED",
+      },
+      launchVolumeAttachments: [
+        {
+          device: "/dev/oracleoci/oraclevdb",
+          isReadOnly: false,
+          type: "paravirtualized",
+          volumeId: volume.id,
+        },
+      ],
+      shape: SHAPE,
+      shapeConfig: { memoryInGbs: 12, ocpus: 2 },
+      sourceDetails: { sourceId: imageId, sourceType: "image" },
     },
     {
       additionalSecretOutputs: ["metadata", "extendedMetadata"],
-      ignoreChanges: ["metadata"],
-      import: importId,
+      deleteBeforeReplace: true,
+      replaceOnChanges: ["displayName", "sourceDetails.sourceId"],
     },
   );
 
